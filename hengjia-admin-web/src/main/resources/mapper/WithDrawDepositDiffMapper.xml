@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.settlement.dao.WithDrawDepositDiffMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.settlement.model.WithDrawDepositDiff">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="external_no" jdbcType="VARCHAR" property="externalNo" />
+    <result column="hengjia_status" jdbcType="VARCHAR" property="hengjiaStatus" />
+    <result column="bank_status" jdbcType="VARCHAR" property="bankStatus" />
+    <result column="hengjia_amount" jdbcType="DECIMAL" property="hengjiaAmount" />
+    <result column="bank_amount" jdbcType="DECIMAL" property="bankAmount" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="diff_type" jdbcType="VARCHAR" property="diffType" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+
+  <sql id="baseColumn">
+      t.id,
+      t.batch_no,
+      t.order_no,
+      t.external_no,
+      t.hengjia_status,
+      t.bank_status,
+      t.hengjia_amount,
+      t.bank_amount,
+      t.type,
+      t.diff_type,
+      t. STATUS,
+      DATE_FORMAT(t.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+      DATE_FORMAT(t.modify_time,'%Y-%m-%d %H:%i:%s') modify_time,
+      t.flag
+  </sql>
+  <sql id="baseFilter">
+    <where>
+      <if test="batchNo!=null and batchNo!=''">
+        and t.batch_no=#{batchNo}
+      </if>
+      <if test="orderNo!=null and orderNo!=''">
+        and t.order_no=#{orderNo}
+      </if>
+      <if test="externalNo!=null and externalNo!=''">
+        and t.external_no=#{externalNo}
+      </if>
+      <if test="diffType!=null and diffType!=''">
+        and t.diff_type=#{diffType}
+      </if>
+      <if test="type!=null and type!=''">
+        and t.type=#{type}
+      </if>
+      <if test="status!=null and status!=''">
+        and t.status=#{status}
+      </if>
+      <if test="startTime!=null and startTime!=''">
+        and DATE_FORMAT(t.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+      </if>
+      <if test="endTime!=null and endTime!=''">
+        and DATE_FORMAT(t.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+      </if>
+      <if test="customerNo!=null and customerNo!=''">
+        and (u.customer_no=#{customerNo} or bk.member_no=#{customerNo})
+      </if>
+      and t.flag=1
+    </where>
+  </sql>
+    <select id="myList" resultType="com.baibei.hengjia.admin.modules.settlement.bean.vo.WithDrawDepositDiffVo">
+      select
+      <include refid="baseColumn"/>,
+        IFNULL(u.customer_no,bk.member_no) customer_no,
+        bk.payer,
+        bk.payee,
+        bk.sub_account,
+        bk.sub_account_name,
+        bk.pay_fee_account,
+        bk.pay_sub_account_name,
+        CONCAT(DATE_FORMAT(bk.pay_date,'%Y-%m-%d')," ",TIME_FORMAT(bk.pay_time,'%H:%i:%s')) payTime
+      from tbl_set_withdraw_deposit_diff t
+        LEFT JOIN
+        (select withdraw.customer_no,withdraw.order_no,withdraw.external_no from tbl_tra_order_withdraw withdraw
+        UNION ALL
+        select deposit.customer_no,deposit.order_no,deposit.external_no from tbl_tra_order_deposit deposit) u
+        on t.order_no = u.order_no
+        LEFT JOIN tbl_set_bank_order bk on t.external_no = bk.bank_serial_no
+      <include refid="baseFilter"/>
+      order by t.create_time desc
+    </select>
+</mapper>

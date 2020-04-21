@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.tradingQuery.dao.EntrustOrderMapper">
+    <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.tradingQuery.model.EntrustOrder">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="entrust_no" jdbcType="VARCHAR" property="entrustNo"/>
+        <result column="customer_no" jdbcType="VARCHAR" property="customerNo"/>
+        <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo"/>
+        <result column="entrust_time" jdbcType="TIMESTAMP" property="entrustTime"/>
+        <result column="direction" jdbcType="VARCHAR" property="direction"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="entrust_count" jdbcType="INTEGER" property="entrustCount"/>
+        <result column="deal_count" jdbcType="INTEGER" property="dealCount"/>
+        <result column="revoke_count" jdbcType="INTEGER" property="revokeCount"/>
+        <result column="result" jdbcType="VARCHAR" property="result"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="reason" jdbcType="VARCHAR" property="reason"/>
+        <result column="fee" jdbcType="DECIMAL" property="fee"/>
+        <result column="hold_type" jdbcType="VARCHAR" property="holdType"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="flag" jdbcType="TINYINT" property="flag"/>
+    </resultMap>
+    <select id="findByEntrustOrder"
+            resultType="com.baibei.hengjia.admin.modules.tradingQuery.bean.vo.EntrustOrderVo">
+        select
+        customer.customer_no as customerNo,
+        customer.username as userName,
+        customer.recommender_id as directRecommendation,
+        signing.acct_name as realName,
+        DATE_FORMAT(entrust.entrust_time,'%Y-%m-%d %H:%i:%s') as entrustTime,
+        entrust.direction as direction,
+        entrust.product_trade_no as productTradeNo,
+        entrust.hold_type as holdType,
+        market.product_trade_name as productName,
+        entrust.price as price,
+        entrust.entrust_count as entrustCount,
+        (entrust.price*entrust.entrust_count) as entrustCountPrice,
+        entrust.entrust_no as entrustNo,
+        entrust.deal_count as dealCount,
+        entrust.result as result
+        from
+        tbl_tra_entrust_order entrust left join tbl_customer customer on entrust.customer_no=customer.customer_no
+        left join tbl_tra_signing_record signing on customer.customer_no=signing.third_cust_id and signing.flag=1
+        left join tbl_pro_product_market market on entrust.product_trade_no=market.product_trade_no
+        <where>
+            <if test="direction!=null and direction!=''">
+                and entrust.direction=#{direction}
+            </if>
+
+            <if test="holdType!=null and holdType!=''">
+                and entrust.hold_type =#{holdType}
+            </if>
+
+            <if test="customerNo!=null and customerNo!=''">
+                and customer.customer_no=#{customerNo}
+            </if>
+            <if test="entrustNo!=null and entrustNo!=''">
+                and entrust.entrust_no=#{entrustNo}
+            </if>
+            <if test="userName!=null and userName!=''">
+                and customer.username like CONCAT('%',#{userName},'%')
+            </if>
+            <if test="productTradeNo!=null and productTradeNo!=''">
+                and entrust.product_trade_no=#{productTradeNo}
+            </if>
+            <if test="result!=null and result!='' ">
+                and entrust.result =#{result}
+            </if>
+            <if test="startTime!=null">
+                and <![CDATA[DATE(entrust.entrust_time)>=DATE(#{startTime})]]>
+            </if>
+            <if test="endTime!=null">
+                and <![CDATA[DATE(entrust.entrust_time)<=DATE(#{endTime})]]>
+            </if>
+        </where>
+        order By entrust_time desc
+    </select>
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.advisory.dao.AdvisoryVideoMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.advisory.model.AdvisoryVideo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="navigation_id" jdbcType="VARCHAR" property="navigationId" />
+    <result column="video_title" jdbcType="VARCHAR" property="videoTitle" />
+    <result column="video_index" jdbcType="VARCHAR" property="videoIndex" />
+    <result column="video_type" jdbcType="VARCHAR" property="videoType" />
+    <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
+    <result column="video_sort" jdbcType="INTEGER" property="videoSort" />
+    <result column="video_display" jdbcType="VARCHAR" property="videoDisplay" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+    <update id="updateByParams">
+      update tbl_advisory_video set
+      video_title = #{videoTitle},
+      video_index = #{videoIndex},
+      video_type = #{videoType},
+      video_url = #{videoUrl},
+      video_sort = #{videoSort},
+      flag = #{flag},
+      video_display = #{videoDisplay},
+      modify_time = #{modifyTime}
+      where id = #{id}
+    </update>
+    <select id="objList" resultType="com.baibei.hengjia.admin.modules.advisory.bean.vo.AdvisoryVideoVo">
+    SELECT
+    id,
+    video_index,
+    navigation_id,
+    video_title,
+    video_type,
+    video_url,
+    video_display,
+    DATE_FORMAT(modify_time,'%Y-%m-%d %H:%i:%s') modify_time,
+    DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') create_time
+    FROM tbl_advisory_video
+    <where>
+      <if test="videoTitle != null and videoTitle !=''">
+        and video_title like "%"#{videoTitle}"%"
+      </if>
+      <if test="createTime != null and createTime !=''">
+        and date(create_time) >= #{createTime}
+      </if>
+      <if test="modifyTime != null and modifyTime !=''">
+        and date(create_time) &lt;= #{modifyTime}
+      </if>
+    </where>
+    order by create_time desc,id
+  </select>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.product.dao.ProductImgMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.product.model.ProductImg">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="spu_no" jdbcType="VARCHAR" property="spuNo" />
+    <result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+
+  <select id="selectProductImgs" resultMap="BaseResultMap">
+    select * from tbl_pro_product_img where spu_no=#{spu_no}
+  </select>
+</mapper>

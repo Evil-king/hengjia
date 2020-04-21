@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.account.dao.RecordMoneyMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.account.model.RecordMoney">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="record_no" jdbcType="VARCHAR" property="recordNo" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="trade_type" jdbcType="TINYINT" property="tradeType" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="withdraw" jdbcType="DECIMAL" property="withdraw" />
+    <result column="change_amount" jdbcType="VARCHAR" property="changeAmount" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="retype" jdbcType="TINYINT" property="retype" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+  <select id="getAll" resultType="com.baibei.hengjia.api.modules.account.bean.vo.RecordVo" parameterType="com.baibei.hengjia.api.modules.account.bean.dto.RecordDto">
+    SELECT change_amount, create_time, trade_type FROM tbl_record_money WHERE customer_no = #{customerNo}
+    <if test="retype!='' and retype!=null">
+      and retype=#{retype}
+    </if>
+    and flag=1
+    ORDER BY
+    create_time DESC ,id
+  </select>
+  <select id="selectSellOut" resultType="BigDecimal" parameterType="string">
+    select change_amount from tbl_record_money where trade_type in (104,106) and customer_no=#{customerNo} and date(create_time)=curdate()
+  </select>
+  <select id="selectByCustomerNoAndDate" parameterType="string" resultType="com.baibei.hengjia.api.modules.account.model.RecordMoney">
+      select * from tbl_record_money where customer_no=#{customerNo} and date(modify_time)&lt;=#{date} and trade_type=#{tradeType}
+  </select>
+
+  <select id="sumChangeAmount" parameterType="java.util.Map" resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+    select t.customer_no as customerNo,sum(t.change_amount) as total from tbl_record_money t
+where 1=1
+and t.trade_type in
+    <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+and t.create_time between #{beginTime} and #{endTime}
+group by t.customer_no
+  </select>
+</mapper>

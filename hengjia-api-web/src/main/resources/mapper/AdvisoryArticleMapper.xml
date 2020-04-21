@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.advisory.dao.AdvisoryArticleMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.advisory.model.AdvisoryArticle">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="navigation_id" jdbcType="VARCHAR" property="navigationId" />
+    <result column="article_title" jdbcType="VARCHAR" property="articleTitle" />
+    <result column="article_image" jdbcType="VARCHAR" property="articleImage" />
+    <result column="article_type" jdbcType="VARCHAR" property="articleType" />
+    <result column="article_url" jdbcType="VARCHAR" property="articleUrl" />
+    <result column="article_content" jdbcType="VARCHAR" property="articleContent" />
+    <result column="article_display" jdbcType="VARCHAR" property="articleDisplay" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+    <select id="objIndex" resultType="com.baibei.hengjia.api.modules.advisory.bean.vo.AdvisoryArticleVo">
+      SELECT
+      article_title,
+      article_type,
+      article_image,
+      article_content,
+      article_url,
+      DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') createTime
+      FROM tbl_advisory_article
+      where article_display = 'show' and id = #{id}
+      order by create_time desc
+    </select>
+</mapper>

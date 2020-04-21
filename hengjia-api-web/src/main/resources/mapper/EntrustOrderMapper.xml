@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.EntrustOrderMapper">
+    <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.EntrustOrder">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="entrust_no" jdbcType="VARCHAR" property="entrustNo"/>
+        <result column="customer_no" jdbcType="VARCHAR" property="customerNo"/>
+        <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo"/>
+        <result column="entrust_time" jdbcType="TIMESTAMP" property="entrustTime"/>
+        <result column="direction" jdbcType="VARCHAR" property="direction"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="entrust_count" jdbcType="INTEGER" property="entrustCount"/>
+        <result column="deal_count" jdbcType="INTEGER" property="dealCount"/>
+        <result column="revoke_count" jdbcType="INTEGER" property="revokeCount"/>
+        <result column="result" jdbcType="VARCHAR" property="result"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="reason" jdbcType="VARCHAR" property="reason"/>
+        <result column="fee" jdbcType="DECIMAL" property="fee"/>
+        <result column="hold_type" jdbcType="VARCHAR" property="holdType"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="flag" jdbcType="TINYINT" property="flag"/>
+        <result column="canShow" jdbcType="TINYINT" property="can_show"/>
+        <result column="transfer_type" jdbcType="VARCHAR" property="transferType"/>
+    </resultMap>
+
+    <select id="allList" parameterType="com.baibei.hengjia.api.modules.trade.bean.dto.EntrustAllListDto"
+            resultType="com.baibei.hengjia.api.modules.trade.bean.vo.EntrustOrderVo">
+        SELECT
+        o.entrust_no AS entrustNo ,
+        o.product_trade_no AS productTradeNo ,
+        o.direction ,
+        m.product_trade_name AS productName ,
+        o.price ,
+        o.entrust_count AS entrustCount ,
+        o.deal_count as dealCount,
+        o.customer_no AS customerNo ,
+        o.customer_no AS customerName,
+        o.id as entrustId
+        FROM
+        tbl_tra_entrust_order o
+        LEFT JOIN tbl_pro_product_market m ON o.product_trade_no = m.product_trade_no
+        <if test="direction != null and direction =='sell'">
+            LEFT JOIN tbl_tra_entrust_details_ref ref on o.entrust_no = ref.entrust_no
+            LEFT JOIN tbl_tra_hold_details s on ref.hold_details_id  = s.id
+        </if>
+        WHERE 1=1
+        and o.can_show = 1
+        <if test="productTradeNo != null and productTradeNo != ''">
+            and o.product_trade_no = #{productTradeNo}
+        </if>
+        <if test="productName != null and productName != ''">
+            and o.product_trade_name = #{productName}
+        </if>
+        <if test="direction != null">
+            and o.direction=#{direction}
+        </if>
+        <if test="transferType != null">
+            and o.transfer_type = #{transferType}
+        </if>
+        <if test="customerNo != null">
+            and o.customer_no = #{customerNo}
+        </if>
+        AND(
+        o.result = 'wait_deal'
+        OR o.result = 'some_deal'
+        )
+        <if test="direction != null and direction =='sell'">
+            order by s.cost desc,o.entrust_time asc
+        </if>
+        <if test="direction != null and direction =='buy'">
+            ORDER BY o.entrust_time asc
+        </if>
+    </select>
+
+    <select id="myList" parameterType="com.baibei.hengjia.common.tool.bean.CustomerBaseAndPageDto"
+            resultType="com.baibei.hengjia.api.modules.trade.bean.vo.MyEntrustOrderVo">
+        SELECT
+	o.entrust_no AS entrustNo ,
+	o.product_trade_no AS productTradeNo ,
+	o.direction ,
+	o.entrust_time AS entrustTime ,
+	m.product_trade_name AS productName ,
+	o.price ,
+	o.entrust_count AS entrustCount ,
+	O.deal_count AS dealCount,
+	o.customer_no AS customerNo ,
+	o.result ,
+	o.hold_type as holdType,
+	t.img_url AS productImg,
+	o.id as entrustId
+FROM
+	tbl_tra_entrust_order o
+LEFT JOIN tbl_pro_product_market m ON o.product_trade_no = m.product_trade_no
+LEFT JOIN tbl_pro_product t ON m.spu_no = t.spu_no
+WHERE
+	o.customer_no = #{customerNo}
+AND(
+	o.result = 'wait_deal'
+	OR o.result = 'some_deal'
+)
+AND t.flag = 1
+ORDER BY
+	o.entrust_time asc
+    </select>
+
+    <select id="entrustCount" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        select sum(t.entrust_count - t.deal_count) from tbl_tra_entrust_order t
+where t.result in('wait_deal','some_deal')
+and t.direction = #{direction}
+and t.product_trade_no = #{productTradeNo}
+    </select>
+    <select id="allRevokeList" resultMap="BaseResultMap">
+        select * from tbl_tra_entrust_order where result in ('wait_deal','some_deal') and status='ok' and flag=1
+        <if test="transferType!=null and transferType!=''">
+            and transfer_type=#{transferType}
+        </if>
+    </select>
+
+    <select id="findNotDealEntrustOrder" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select * from tbl_tra_entrust_order t
+        where t.flag = 1
+        <if test="direction != null">
+            and t.direction = #{direction}
+        </if>
+        <if test="customerNo != null">
+            and t.customer_no = #{customerNo}
+        </if>
+        <if test="productTradeNo != null">
+            and t.product_trade_no = #{productTradeNo}
+        </if>
+        and t.result in ('wait_deal','some_deal')
+    </select>
+</mapper>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.HoldTotalMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.HoldTotal">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="total_count" jdbcType="DECIMAL" property="totalCount" />
+    <result column="frozen_count" jdbcType="DECIMAL" property="frozenCount" />
+    <result column="can_sell_count" jdbcType="DECIMAL" property="canSellCount" />
+    <result column="cost" jdbcType="DECIMAL" property="cost" />
+    <result column="hold_type" jdbcType="VARCHAR" property="holdType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+    <update id="updateTotalCount">
+        update tbl_tra_hold_total set total_count=total_count+#{deliveryMatchCount} where id=#{id}
+    </update>
+
+    <select id="myHoldList" parameterType="com.baibei.hengjia.api.modules.trade.bean.dto.MyHoldDto" resultType="com.baibei.hengjia.api.modules.trade.bean.vo.MyHoldVo">
+    SELECT
+	h.customer_no AS customerNo ,
+	h.total_count AS totalCount ,
+	h.can_sell_count AS canSellCount ,
+	h.hold_type AS holdType ,
+	m.issue_price AS newPrice ,
+	h.product_trade_no AS productTradeNo ,
+	m.product_trade_name AS productName ,
+	t.img_url AS productImg,
+	m.delivery_num as deliveryNum
+FROM
+	tbl_tra_hold_total h
+LEFT JOIN tbl_pro_product_market m ON h.product_trade_no = m.product_trade_no
+LEFT JOIN tbl_pro_product t ON m.spu_no = t.spu_no
+WHERE
+	h.customer_no = #{customerNo}
+	and h.total_count&gt;0
+ORDER BY
+	m.market_time DESC
+  </select>
+    <!--
+        查询符合提货配票要求的持仓单。（持仓数量>=100手并且还未提货配票过的用户）
+        但是，由于，用户可能在交易的时候就已经提过货，所以，需要加上提货数量再进行比较，如果大于100，
+        则符合提货配票要求，否则，不符合。
+    -->
+    <select id="selectMatchHoldList" resultMap="BaseResultMap">
+        select * from tbl_tra_hold_total h where h.customer_no = #{customerNo} and flag=1 and hold_type='main' and (h.total_count-h.frozen_count)+
+        (
+        select IFNULL(
+        (select sum(d.delivery_count) from tbl_tra_delivery d where h.customer_no=d.customer_no and
+          h.product_trade_no=d.product_trade_no and h.hold_type=d.hold_type group by customer_no),0)
+          )&gt;=100
+    </select>
+    <select id="selectMyDeliveryHold"
+            resultType="com.baibei.hengjia.api.modules.trade.bean.vo.MyDeliveryHoldVo">
+	SELECT
+	h.resource,
+	sum(h.remaind_count) totalCount,
+	h.product_trade_no productTradeNo,
+	h.customer_no customerNo,
+	m.product_trade_name  productName,
+	t.img_url productImg,
+    m.issue_price newPrice,
+    h.hold_type holdType,
+    h.frozen_count frozenCount
+FROM
+	tbl_tra_hold_details h
+LEFT JOIN tbl_pro_product_market m ON h.product_trade_no = m.product_trade_no
+LEFT JOIN tbl_pro_product t ON m.spu_no = t.spu_no
+WHERE
+	h.customer_no = #{customerNo}
+	and h.product_trade_no=#{productTradeNo}
+	<if test="holdType == 'exchange'">
+        and h.hold_type = 'match' and h.resource = 'exchange'
+    </if>
+    <if test="holdType != 'exchange'">
+        and h.hold_type=#{holdType} and h.resource != 'exchange'
+    </if>
+    </select>
+
+    <select id="myHoldListForNew" parameterType="java.util.Map" resultType="com.baibei.hengjia.api.modules.trade.bean.vo.MyHoldNewVo">
+        SELECT
+        h.id,
+        h.customer_no AS customerNo,
+        h.frozen_count AS frozenCount,
+        h.remaind_count AS remindCount,
+        h.create_time AS createTime,
+        h.original_count as originalCount,
+        h.scanner,
+        m.issue_price AS newPrice,
+        h.product_trade_no AS productTradeNo,
+        m.product_trade_name AS productName,
+        t.img_url AS productImg,
+        m.delivery_num AS deliveryNum
+        FROM
+        tbl_tra_hold_details h
+        LEFT JOIN tbl_pro_product_market m ON h.product_trade_no = m.product_trade_no
+        LEFT JOIN tbl_pro_product t ON m.spu_no = t.spu_no
+        WHERE
+        h.customer_no = #{customerNo}
+        <if test="type != null and type=='main'">
+            and h.hold_type = 'main'
+        </if>
+        <if test="type != null and type =='match'">
+            <![CDATA[and h.hold_type = 'match' and resource <> 'exchange']]>
+        </if>
+        <if test="type != null and type =='exchange'">
+            and h.hold_type = 'match' and resource = 'exchange'
+        </if>
+        AND (h.remaind_count + h.frozen_count) > 0
+        ORDER BY
+        h.create_time asc
+    </select>
+</mapper>

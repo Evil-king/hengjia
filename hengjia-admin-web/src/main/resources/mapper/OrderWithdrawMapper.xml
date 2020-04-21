@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.withdraw.dao.OrderWithdrawMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.withdraw.model.OrderWithdraw">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="orderAmt" jdbcType="DECIMAL" property="orderamt" />
+    <result column="order_type" jdbcType="VARCHAR" property="orderType" />
+    <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+    <result column="handel_fee" jdbcType="DECIMAL" property="handelFee" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="reviewer" jdbcType="VARCHAR" property="reviewer" />
+    <result column="reviewer_time" jdbcType="TIMESTAMP" property="reviewerTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="effective" jdbcType="TINYINT" property="effective" />
+    <result column="external_no" jdbcType="VARCHAR" property="externalNo" />
+    <result column="sup_acct_Id" jdbcType="VARCHAR" property="supAcctId" />
+    <result column="cust_acct_Id" jdbcType="VARCHAR" property="custAcctId" />
+    <result column="remarks" jdbcType="LONGVARCHAR" property="remarks" />
+  </resultMap>
+
+    <select id="pageList" resultType="com.baibei.hengjia.admin.modules.withdraw.bean.vo.WithdrawListVo">
+        SELECT
+        w.order_no,
+        w.customer_no,
+        w.reviewer,
+        w.account_name AS user_name,
+        c.mobile,
+        w.orderAmt,
+        w.handel_fee,
+        CASE
+        WHEN w.status = '1'
+        THEN
+        '待审核'
+        WHEN w.status = '2'
+        THEN
+        '审核通过'
+        WHEN w.status = '3'
+        THEN
+        '提现处理中'
+        WHEN w.status = '4'
+        THEN
+        '提现成功'
+        WHEN w.status = '5'
+        THEN
+        '提现失败'
+        WHEN w.status = '6'
+        THEN
+        '审核不通过'
+        END status,
+        c.member_no,
+        DATE_FORMAT(w.create_time,'%Y-%m-%d %H:%i:%s') startTime,
+        DATE_FORMAT(w.update_time,'%Y-%m-%d %H:%i:%s') endTime,
+        DATE_FORMAT(w.reviewer_time,'%Y-%m-%d %H:%i:%s') reviewTime,
+        w.external_no
+        FROM tbl_tra_order_withdraw w,tbl_customer c where w.customer_no=c.customer_no
+        <if test="orderNo != null and orderNo !=''">
+            and w.order_no=#{orderNo}
+        </if>
+        <if test="customerNo != null and customerNo!=''">
+            and w.customer_no=#{customerNo}
+        </if>
+        <if test="customerNo != null and customerNo!=''">
+            and w.customer_no=#{customerNo}
+        </if>
+        <if test="userName != null and userName !=''">
+            and w.account_name like CONCAT('%',#{userName},'%')
+        </if>
+        <if test="mobile != null and mobile !=''">
+            and c.mobile=#{mobile}
+        </if>
+        <if test="status != null and status!=''">
+            and w.status=#{status}
+        </if>
+        <if test="memberNo != null and memberNo!=''">
+            and c.member_no=#{memberNo}
+        </if>
+        <if test="externalNo != null and externalNo!=''">
+            and w.external_no=#{externalNo}
+        </if>
+        <if test="startTime != null and startTime!=''">
+            and date(w.create_time) &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime!=''">
+            and date(w.create_time) &lt;= #{endTime}
+        </if>
+        <if test="effective != null and effective!=''">
+            and w.effective = #{effective}
+        </if>
+        <if test="reviewer != null and reviewer!=''">
+            and w.reviewer=#{reviewer}
+        </if>
+        order by w.create_time desc
+    </select>
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.account.dao.RecordIntegralMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.account.model.RecordIntegral">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="record_no" jdbcType="VARCHAR" property="recordNo" />
+    <result column="change_amount" jdbcType="VARCHAR" property="changeAmount" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="trade_type" jdbcType="TINYINT" property="tradeType" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="integral_no" jdbcType="BIGINT" property="integralNo" />
+    <result column="retype" jdbcType="TINYINT" property="retype" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+  <select id="getAll" resultType="com.baibei.hengjia.api.modules.account.bean.vo.RecordVo" parameterType="com.baibei.hengjia.api.modules.account.bean.dto.RecordDto">
+    SELECT change_amount, create_time, trade_type FROM tbl_record_integral WHERE customer_no = #{customerNo}
+    <if test="retype!='' and retype!=null">
+      and retype=#{retype}
+    </if>
+    and flag=1
+    ORDER BY
+    create_time DESC ,id
+  </select>
+</mapper>

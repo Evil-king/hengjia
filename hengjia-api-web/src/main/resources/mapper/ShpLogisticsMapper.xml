@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.shop.dao.ShpLogisticsMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.shop.model.ShpLogistics">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="logistics_no" jdbcType="VARCHAR" property="logisticsNo" />
+    <result column="logistice_type" jdbcType="VARCHAR" property="logisticeType" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="received_time" jdbcType="TIMESTAMP" property="receivedTime" />
+    <result column="pending_time" jdbcType="TIMESTAMP" property="pendingTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+</mapper>

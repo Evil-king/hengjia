@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.cash.dao.SignInBackMapper">
+    <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.cash.model.SignInBack">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="sign_status" jdbcType="CHAR" property="signStatus"/>
+        <result column="sign_no" jdbcType="VARCHAR" property="signNo"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="flag" jdbcType="TINYINT" property="flag"/>
+        <result column="tx_date" jdbcType="TIMESTAMP" property="txDate"/>
+        <result column="reserve" jdbcType="VARCHAR" property="reserve"/>
+        <result column="external_no" jdbcType="VARCHAR" property="externalNo"></result>
+        <result column="status" jdbcType="VARCHAR" property="status"></result>
+    </resultMap>
+
+    <sql id="baseColumn">
+id,sign_status,sign_no,create_time,flag,tx_date,reserve,external_no,status
+    </sql>
+    <select id="findSignInBackByToday" resultMap="BaseResultMap">
+        select
+        <include refid="baseColumn"/>
+        from tbl_cash_sign_in_back
+        <where>
+            date(tx_date)=#{today}
+            and
+            sign_status=#{signInBackStatus}
+            and status='success'
+        </where>
+    </select>
+</mapper>

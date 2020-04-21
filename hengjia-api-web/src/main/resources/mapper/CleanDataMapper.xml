@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.settlement.dao.CleanDataMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.settlement.model.CleanData">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+    <result column="query_id" jdbcType="INTEGER" property="queryId" />
+    <result column="tran_date_time" jdbcType="VARCHAR" property="tranDateTime" />
+    <result column="counter_id" jdbcType="VARCHAR" property="counterId" />
+    <result column="supAcct_id" jdbcType="VARCHAR" property="supacctId" />
+    <result column="func_code" jdbcType="VARCHAR" property="funcCode" />
+    <result column="cust_acct_id" jdbcType="VARCHAR" property="custAcctId" />
+    <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+    <result column="third_cust_id" jdbcType="VARCHAR" property="thirdCustId" />
+    <result column="third_log_No" jdbcType="VARCHAR" property="thirdLogNo" />
+    <result column="ccy_code" jdbcType="VARCHAR" property="ccyCode" />
+    <result column="freeze_amount" jdbcType="DECIMAL" property="freezeAmount" />
+    <result column="unfreeze_amount" jdbcType="DECIMAL" property="unfreezeAmount" />
+    <result column="add_tran_amount" jdbcType="DECIMAL" property="addtranAmount" />
+    <result column="cut_tran_amount" jdbcType="DECIMAL" property="cuttranAmount" />
+    <result column="profit_amount" jdbcType="DECIMAL" property="profitAmount" />
+    <result column="loss_amount" jdbcType="DECIMAL" property="lossAmount" />
+    <result column="tran_hand_fee" jdbcType="DECIMAL" property="tranHandFee" />
+    <result column="tran_count" jdbcType="DECIMAL" property="tranCount" />
+    <result column="new_balance" jdbcType="DECIMAL" property="newBalance" />
+    <result column="new_freeze_amount" jdbcType="DECIMAL" property="newFreezeAmount" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="reserve" jdbcType="VARCHAR" property="reserve" />
+    <result column="clean_status" jdbcType="VARCHAR" property="cleanStatus" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>

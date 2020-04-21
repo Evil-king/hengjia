@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.advisory.dao.PublicNoticeMapper">
+    <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.advisory.model.PublicNotice">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="tag" jdbcType="VARCHAR" property="tag"/>
+        <result column="effective_begin_time" jdbcType="TIMESTAMP" property="effectiveBeginTime"/>
+        <result column="effective_end_time" jdbcType="TIMESTAMP" property="effectiveEndTime"/>
+        <result column="flag" jdbcType="TINYINT" property="flag"/>
+        <result column="hidden" jdbcType="CHAR" property="hidden"/>
+        <result column="top" jdbcType="INTEGER" property="top"/>
+        <result column="public_type" jdbcType="VARCHAR" property="publicType"/>
+        <result column="publish_type" jdbcType="VARCHAR" property="publishType"/>
+        <result column="seq" jdbcType="INTEGER" property="seq"/>
+        <result column="link" jdbcType="VARCHAR" property="link"/>
+        <result column="image" jdbcType="VARCHAR" property="image"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+    </resultMap>
+
+
+    <select id="findByApiPublicNoticeNoContent"
+            resultType="com.baibei.hengjia.api.modules.advisory.bean.vo.AdvisoryPublicNoticeVo">
+        select
+        id as id,
+        title as title,
+        create_time as createTime,
+        image as image,
+        link as link,
+        hidden as hidden,
+        seq as seq
+        FROM
+        tbl_advisory_public_notice
+        <where>
+            flag=1 and hidden=0
+        </where>
+        order by seq is NULL, seq ASC,
+        create_time DESC
+    </select>
+</mapper>

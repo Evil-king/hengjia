@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.DeliveryMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.Delivery">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="product_trade_no" jdbcType="BIGINT" property="productTradeNo" />
+    <result column="product_trade_name" jdbcType="BIGINT" property="productTradeName" />
+    <result column="issue_price" jdbcType="BIGINT" property="issuePrice" />
+    <result column="hold_type" jdbcType="BIGINT" property="holdType" />
+    <result column="address_id" jdbcType="BIGINT" property="addressId" />
+    <result column="delivery_no" jdbcType="VARCHAR" property="deliveryNo" />
+    <result column="logistics_no" jdbcType="VARCHAR" property="logisticsNo" />
+    <result column="delivery_status" jdbcType="INTEGER" property="deliveryStatus" />
+    <result column="delivery_time" jdbcType="TIMESTAMP" property="deliveryTime" />
+    <result column="audit_time" jdbcType="TIMESTAMP" property="auditTime" />
+    <result column="pending_time" jdbcType="TIMESTAMP" property="pendingTime" />
+    <result column="receive_time" jdbcType="TIMESTAMP" property="receiveTime" />
+    <result column="logistics_type" jdbcType="VARCHAR" property="logisticsType" />
+    <result column="logistics_company" jdbcType="VARCHAR" property="logisticsCompany" />
+    <result column="storage_charge" jdbcType="DECIMAL" property="storageCharge" />
+    <result column="clearance_charge" jdbcType="DECIMAL" property="clearanceCharge" />
+    <result column="freight" jdbcType="DECIMAL" property="freight" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="source" jdbcType="VARCHAR" property="remark" />
+    <result column="delivery_count" jdbcType="INTEGER" property="deliveryCount" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="hold_type" jdbcType="VARCHAR" property="holdType" />
+  </resultMap>
+
+  <resultMap id="ResultMap2" type="com.baibei.hengjia.api.modules.trade.bean.vo.MyDeliveryVo">
+    <result column="deliveryNo" jdbcType="VARCHAR" property="deliveryNo" />
+    <result column="productTradeNo" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="productTradeName" jdbcType="VARCHAR" property="productTradeName" />
+    <result column="issuePrice" jdbcType="DECIMAL" property="issuePrice" />
+    <result column="logisticsNo" jdbcType="VARCHAR" property="logisticsNo" />
+    <result column="deliveryStatus" jdbcType="INTEGER" property="deliveryStatus" />
+    <result column="deliveryTime" jdbcType="TIMESTAMP" property="deliveryTime" />
+    <result column="logisticsCompany" jdbcType="VARCHAR" property="logisticsCompany" />
+    <result column="deliveryCount" jdbcType="INTEGER" property="deliveryCount" />
+    <result column="imgUrl" jdbcType="VARCHAR" property="imgUrl" />
+  </resultMap>
+  <select id="selectForPage" resultMap="ResultMap2">
+    select d.delivery_no deliveryNo,d.logistics_no logisticsNo,
+    d.delivery_status deliveryStatus,d.delivery_time deliveryTime,
+    d.logistics_company logisticsCompany,d.delivery_count deliveryCount,d.issue_price issuePrice,
+    d.product_trade_no productTradeNo,d.product_trade_name productTradeName,
+    p.img_url imgUrl,
+    d.source source
+    from tbl_tra_delivery d
+    left join tbl_pro_product_market pm on d.product_trade_no=pm.product_trade_no
+    left join tbl_pro_product p on pm.spu_no=p.spu_no
+    <where>
+      <if test="customerNo!=null and customerNo!=''">
+        and d.customer_no=#{customerNo}
+      </if>
+      <if test="startTime!=null and startTime!=''">
+        and date_format(d.delivery_time,'%Y-%m-%d') &gt;= date_format(#{startTime},'%Y-%m-%d')
+      </if>
+      <if test="endTime!=null and endTime!=''">
+        and date_format(d.delivery_time,'%Y-%m-%d') &lt;= date_format(#{endTime},'%Y-%m-%d')
+      </if>
+    </where>
+    order by d.delivery_time desc
+  </select>
+    <select id="selectTheFirstDelivery" resultMap="BaseResultMap">
+        select d.*,MIN(d.create_time) from tbl_tra_delivery d where d.customer_no=#{customerNo}
+    </select>
+
+  <select id="sumAmount" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+    select ifnull(sum(t.issue_price * t.delivery_count),0) from tbl_tra_delivery t
+    where t.flag = 1
+    and t.audit_time between #{beginTime} and #{endTime}
+    and t.delivery_status in (20,30,40)
+  </select>
+</mapper>

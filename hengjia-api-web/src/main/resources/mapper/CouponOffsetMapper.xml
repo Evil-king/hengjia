@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.match.dao.CouponOffsetMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.match.model.CouponOffset">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="offset_no" jdbcType="VARCHAR" property="offsetNo" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="detuch_coupon_acct" jdbcType="DECIMAL" property="detuchCouponAcct" />
+    <result column="offset_amount" jdbcType="DECIMAL" property="offsetAmount" />
+    <result column="offset_count" jdbcType="DECIMAL" property="offsetCount" />
+    <result column="cost" jdbcType="DECIMAL" property="cost" />
+    <result column="buy_fee" jdbcType="DECIMAL" property="buyFee" />
+    <result column="sell_fee" jdbcType="DECIMAL" property="sellFee" />
+    <result column="trade_day" jdbcType="TIMESTAMP" property="tradeDay" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="fail_type" jdbcType="VARCHAR" property="failType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>

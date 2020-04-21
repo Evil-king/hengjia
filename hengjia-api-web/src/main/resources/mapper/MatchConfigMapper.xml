@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.MatchConfigMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.MatchConfig">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="match_switch" jdbcType="VARCHAR" property="matchSwitch" />
+    <result column="switch_type" jdbcType="VARCHAR" property="switchType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+    <update id="updateSwitch">
+      update tbl_match_config set match_switch=#{swtch},modify_time=now() where switch_type=#{switchType} and match_switch='on'
+    </update>
+</mapper>

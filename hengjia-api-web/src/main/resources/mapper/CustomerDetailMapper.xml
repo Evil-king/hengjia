@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.user.dao.CustomerDetailMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.user.model.CustomerDetail">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="sex" jdbcType="CHAR" property="sex" />
+    <result column="age" jdbcType="BIT" property="age" />
+    <result column="realname" jdbcType="VARCHAR" property="realname" />
+    <result column="idcard" jdbcType="VARCHAR" property="idcard" />
+    <result column="idcard_back" jdbcType="VARCHAR" property="idcardBack" />
+    <result column="idcard_front" jdbcType="VARCHAR" property="idcardFront" />
+    <result column="user_picture" jdbcType="VARCHAR" property="userPicture" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>

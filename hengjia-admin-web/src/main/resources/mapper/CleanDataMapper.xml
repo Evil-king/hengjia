@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.settlement.dao.CleanDataMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.settlement.model.CleanData">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+    <result column="query_id" jdbcType="INTEGER" property="queryId" />
+    <result column="tran_date_time" jdbcType="VARCHAR" property="tranDateTime" />
+    <result column="counter_id" jdbcType="VARCHAR" property="counterId" />
+    <result column="supAcct_id" jdbcType="VARCHAR" property="supacctId" />
+    <result column="func_code" jdbcType="VARCHAR" property="funcCode" />
+    <result column="cust_acct_id" jdbcType="VARCHAR" property="custAcctId" />
+    <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+    <result column="third_cust_id" jdbcType="VARCHAR" property="thirdCustId" />
+    <result column="third_log_No" jdbcType="VARCHAR" property="thirdLogNo" />
+    <result column="ccy_code" jdbcType="VARCHAR" property="ccyCode" />
+    <result column="freeze_amount" jdbcType="DECIMAL" property="freezeAmount" />
+    <result column="unfreeze_amount" jdbcType="DECIMAL" property="unfreezeAmount" />
+    <result column="add_tran_amount" jdbcType="DECIMAL" property="addTranAmount" />
+    <result column="cut_tran_amount" jdbcType="DECIMAL" property="cutTranAmount" />
+    <result column="profit_amount" jdbcType="DECIMAL" property="profitAmount" />
+    <result column="loss_amount" jdbcType="DECIMAL" property="lossAmount" />
+    <result column="tran_hand_fee" jdbcType="DECIMAL" property="tranHandFee" />
+    <result column="tran_count" jdbcType="DECIMAL" property="tranCount" />
+    <result column="new_balance" jdbcType="DECIMAL" property="newBalance" />
+    <result column="new_freeze_amount" jdbcType="DECIMAL" property="newFreezeAmount" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="reserve" jdbcType="VARCHAR" property="reserve" />
+    <result column="clean_status" jdbcType="VARCHAR" property="cleanStatus" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+  <select id="CleanDataPageVoList" parameterType="com.baibei.hengjia.admin.modules.settlement.bean.dto.CleanDataPageDto" resultType="com.baibei.hengjia.admin.modules.settlement.model.CleanData">
+    select * from tbl_set_clean_data where flag=1
+    <if test="batchNo != null and batchNo !=''">
+      and batch_no = #{batchNo}
+    </if>
+    <if test="customerNo != null and customerNo !=''">
+      and third_cust_id = #{customerNo}
+    </if>
+    order by create_time desc
+  </select>
+  <select id="fundPageList" parameterType="com.baibei.hengjia.admin.modules.dataStatistics.bean.dto.FundDataStatisticsDto" resultType="com.baibei.hengjia.admin.modules.dataStatistics.bean.vo.FundDataStatisticsVo">
+      select
+      c.createTime,c.customerNo,c.realName,c.username
+      from(select a.customer_no as customerNo, a.username as username,b.cust_name as realName, c.trade_day
+      as createTime from tbl_customer a ,tbl_tra_signing_record b,
+      (select distinct DATE_FORMAT( c.trade_day ,'%Y-%m-%d') trade_day,DATE_FORMAT( c.trade_day ,'%Y%m%d') trade_day_no
+      from
+      tbl_tra_trade_day c
+      where 1=1
+      <if test="flag!=null and flag!=''">and DATE_FORMAT(date_add(c.trade_day,INTERVAL -0 day),'%Y-%m-%d') =
+          DATE_FORMAT(date_add(STR_TO_DATE(now(),'%Y-%m-%d'),INTERVAL -0 day),'%Y-%m-%d')
+      </if>
+    <if
+            test="flag==null and flag==''">
+      and DATE_FORMAT(date_add(c.trade_day,INTERVAL -0 day),'%Y-%m-%d') &lt; DATE_FORMAT(date_add(STR_TO_DATE(now(),'%Y-%m-%d'),INTERVAL -0 day),'%Y-%m-%d')
+    </if>
+    and c.flag=1 )c
+where a.customer_no=b.third_cust_id and b.func_flag in (1,2)
+    <if test="customerNo!=null and customerNo!=''">
+      and a.customer_no = #{customerNo}
+    </if>
+    <if test="username!=null and username!=''">
+      and a.username like CONCAT('%',#{username},'%')
+    </if>
+    <if test="realname!=null and realname!=''">
+      and b.cust_name like CONCAT('%',#{realname},'%')
+    </if>
+and  not  EXISTS(select 1 from tbl_set_clean_data d where d.batch_no=c.trade_day_no and d.clean_status="success")
+union
+select a.customer_no,a.username,d.cust_name,
+DATE_FORMAT(date_add(STR_TO_DATE(d.batch_no,'%Y%m%d'),INTERVAL -0 day),'%Y-%m-%d') trade_day
+from tbl_set_clean_data d,tbl_customer a where a.customer_no=d.third_cust_id and d.clean_status="success"
+    <if test="startTime!=null and startTime!=''">
+      and d.batch_no &gt;= DATE_FORMAT(date_add(STR_TO_DATE(#{startTime},'%Y-%m-%d'),INTERVAL -0 day),'%Y%m%d')
+    </if>
+    <if test="endTime!=null and endTime!=''">
+      and d.batch_no &lt;= DATE_FORMAT(date_add(STR_TO_DATE(#{endTime},'%Y-%m-%d'),INTERVAL -0 day),'%Y%m%d')
+    </if>
+    <if test="customerNo!=null and customerNo!=''">
+      and a.customer_no = #{customerNo}
+    </if>
+    <if test="username!=null and username!=''">
+      and a.username like CONCAT('%',#{username},'%')
+    </if>
+    <if test="realname!=null and realname!=''">
+      and d.cust_name like CONCAT('%',#{realname},'%')
+    </if>
+      ) c
+      order by c.createTime desc
+  </select>
+  <select id="findTodayInitMoney" parameterType="string" resultType="BigDecimal">
+    select new_balance from tbl_set_clean_data where batch_no= DATE_FORMAT(date_add(STR_TO_DATE(#{createTime},'%Y-%m-%d'),INTERVAL -1 day),'%Y%m%d') and third_cust_id=#{customerNo}and clean_status="success"
+  </select>
+    <select id="findInitMoneyAndMonday" parameterType="string" resultType="BigDecimal">
+    select new_balance from tbl_set_clean_data where batch_no= DATE_FORMAT(date_add(STR_TO_DATE(#{createTime},'%Y-%m-%d'),INTERVAL -3 day),'%Y%m%d') and third_cust_id=#{customerNo}and clean_status="success"
+  </select>
+
+    <select id="findByFundDataStatisticsDto" parameterType="com.baibei.hengjia.admin.modules.dataStatistics.bean.dto.FundDataStatisticsDto" resultType="com.baibei.hengjia.admin.modules.dataStatistics.bean.vo.FundDataStatisticsVo">
+        select a.customer_no customerNo,a.username username,d.cust_name realname,
+        DATE_FORMAT(date_add(STR_TO_DATE(d.batch_no,'%Y%m%d'),INTERVAL -0 day),'%Y-%m-%d') createTime
+        from tbl_set_clean_data d,tbl_customer a where a.customer_no=d.third_cust_id and d.clean_status="success"
+        <if test="startTime!=null and startTime!=''">
+            and d.batch_no &gt;= DATE_FORMAT(date_add(STR_TO_DATE(#{startTime},'%Y-%m-%d'),INTERVAL -0 day),'%Y%m%d')
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and d.batch_no &lt;= DATE_FORMAT(date_add(STR_TO_DATE(#{endTime},'%Y-%m-%d'),INTERVAL -0 day),'%Y%m%d')
+        </if>
+        <if test="customerNo!=null and customerNo!=''">
+            and a.customer_no = #{customerNo}
+        </if>
+        <if test="username!=null and username!=''">
+            and a.username like CONCAT('%',#{username},'%')
+        </if>
+        <if test="realname!=null and realname!=''">
+            and d.cust_name like CONCAT('%',#{realname},'%')
+        </if>
+    </select>
+</mapper>

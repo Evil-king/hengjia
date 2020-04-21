@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.HoldDetailsMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.HoldDetails">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="original_count" jdbcType="INTEGER" property="originalCount" />
+    <result column="frozen_count" jdbcType="INTEGER" property="frozenCount"/>
+    <result column="remaind_count" jdbcType="INTEGER" property="remaindCount" />
+    <result column="cost" jdbcType="DECIMAL" property="cost" />
+    <result column="trade_time" jdbcType="TIMESTAMP" property="tradeTime" />
+    <result column="hold_no" jdbcType="VARCHAR" property="holdNo" />
+    <result column="hold_time" jdbcType="TIMESTAMP" property="holdTime" />
+    <result column="resource" jdbcType="VARCHAR" property="resource" />
+    <result column="scanner" jdbcType="TINYINT" property="scanner" />
+    <result column="hold_type" jdbcType="VARCHAR" property="holdType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+
+  <select id="sumRemaindCountByTradeTime" parameterType="java.util.Map" resultType="com.baibei.hengjia.api.modules.trade.model.HoldDetails">
+    select t.customer_no as customerNo,sum(t.remaind_count) as remaindCount,DATE_FORMAT(t.trade_time,'%Y-%m-%d') as tradeTime,t.scanner
+from tbl_tra_hold_details t where t.customer_no = #{customerNo} and t.hold_type = #{holdType} and t.product_trade_no = #{productTradeNo} and t.remaind_count > 0
+group by DATE_FORMAT(t.trade_time,'%Y-%m-%d')
+  </select>
+
+  <select id="findByParamTemp" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select * from tbl_tra_hold_details t where t.customer_no = #{customerNo} and t.hold_type = #{holdType} and t.product_trade_no = #{productTradeNo}
+and t.remaind_count > 0
+and DATE_FORMAT(t.trade_time,'%Y-%m-%d') = #{tradeTime}
+  </select>
+
+  <select id="findHoldDetailsForNext" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select * from tbl_tra_hold_details t
+    where 1=1
+    and t.customer_no = #{customerNo}
+    and t.product_trade_no = #{productTradeNo}
+    and t.remaind_count > 0
+    <![CDATA[and t.trade_time < #{nextTradeDay}]]>
+  </select>
+
+  <select id="findByDealOrderNO" parameterType="java.util.List" resultMap="BaseResultMap">
+    select d.* from tbl_tra_deal_hold_ref ref left join tbl_tra_hold_details d on ref.hold_details_id = d.id
+where ref.deal_no in
+    <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+  </select>
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.product.dao.PropertyValueMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.product.model.PropertyValue">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name_id" jdbcType="BIGINT" property="nameId" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>

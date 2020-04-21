@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.AutoRecordMapper">
+    <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.AutoRecord">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="customer_no" jdbcType="VARCHAR" property="customerNo"/>
+        <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo"/>
+        <result column="entrust_no" jdbcType="VARCHAR" property="entrustNo"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="auto_price" jdbcType="DECIMAL" property="autoPrice"/>
+        <result column="auto_count" jdbcType="INTEGER" property="autoCount"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="flag" jdbcType="TINYINT" property="flag"/>
+    </resultMap>
+
+    <select id="pageList" parameterType="java.util.Map"
+            resultType="com.baibei.hengjia.api.modules.trade.bean.vo.AutoTradeRecordVo">
+    select r.customer_no as customerNo,r.product_trade_no as productTradeNo,m.product_trade_name as productTradeName,
+    r.auto_price as price,r.auto_count as count,r.type,r.create_time as createTime,m.spu_no as spuNo  from tbl_tra_auto_record r left join tbl_pro_product_market m
+on r.product_trade_no = m.product_trade_no
+where 1=1
+and r.customer_no = #{customerNo}
+and r.create_time >= #{tradeDay}
+order by r.create_time desc
+  </select>
+</mapper>

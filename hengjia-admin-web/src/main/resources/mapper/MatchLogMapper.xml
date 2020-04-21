@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.match.dao.MatchLogMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.match.model.MatchLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="match_no" jdbcType="VARCHAR" property="matchNo" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="match_type" jdbcType="VARCHAR" property="matchType" />
+    <result column="match_num" jdbcType="DECIMAL" property="matchNum" />
+    <result column="match_success_num" jdbcType="DECIMAL" property="matchSuccessNum" />
+    <result column="match_money" jdbcType="DECIMAL" property="matchMoney" />
+    <result column="cost" jdbcType="DECIMAL" property="cost" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="match_status" jdbcType="VARCHAR" property="matchStatus" />
+    <result column="period" jdbcType="DATE" property="period" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+
+  <sql id="baseColumn">
+    t.id,
+    t.match_no,
+    t.customer_no,
+    t.product_trade_no,
+    t.match_type,
+    t.match_num,
+    t.match_success_num,
+    t.match_money,
+    t.cost,
+    t.fee,
+    t.match_status,
+    t.period,
+    t.remark,
+	DATE_FORMAT(t.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+	DATE_FORMAT(t.modify_time,'%Y-%m-%d %H:%i:%s') modify_time,
+	t.flag
+  </sql>
+
+  <sql id="baseFilter">
+    <where>
+      <if test="matchNo!=null and matchNo!=''">
+        and t.match_no = #{matchNo}
+      </if>
+      <if test="customerNo!=null and customerNo!=''">
+        and t.customer_no = #{customerNo}
+      </if>
+      <if test="productTradeNo!=null and productTradeNo!=''">
+        and t.product_trade_no = #{productTradeNo}
+      </if>
+      <if test="matchType!=null and matchType!=''">
+        and t.match_type = #{matchType}
+      </if>
+      <if test="matchStatus!=null and matchStatus!=''">
+        and t.match_status = #{matchStatus}
+      </if>
+      <if test="startTime!=null and startTime!=''">
+        and DATE_FORMAT(t.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+      </if>
+      <if test="endTime!=null and endTime!=''">
+        and DATE_FORMAT(t.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+      </if>
+    </where>
+  </sql>
+    <select id="myList" resultType="com.baibei.hengjia.admin.modules.match.bean.vo.MatchLogVo">
+      select
+        <include refid="baseColumn"/>
+      from tbl_tra_match_log t
+        <include refid="baseFilter"/>
+    </select>
+</mapper>

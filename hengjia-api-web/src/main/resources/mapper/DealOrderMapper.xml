@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.DealOrderMapper">
+    <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.DealOrder">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="deal_no" jdbcType="VARCHAR" property="dealNo"/>
+        <result column="entrust_id" jdbcType="BIGINT" property="entrustId"/>
+        <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo"/>
+        <result column="buy_customer_no" jdbcType="VARCHAR" property="buyCustomerNo"/>
+        <result column="sell_customer_no" jdbcType="VARCHAR" property="sellCustomerNo"/>
+        <result column="buy_fee" jdbcType="DECIMAL" property="buyFee"/>
+        <result column="sell_fee" jdbcType="DECIMAL" property="sellFee"/>
+        <result column="profit" jdbcType="DECIMAL" property="profit"/>
+        <result column="integral" jdbcType="DECIMAL" property="integral"/>
+        <result column="coupon_amount" jdbcType="DECIMAL" property="couponAmount"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="hold_type" jdbcType="VARCHAR" property="holdType"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
+        <result column="resource" jdbcType="VARCHAR" property="resource"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="flag" jdbcType="TINYINT" property="flag"/>
+        <result column="integral_return_flag" jdbcType="VARCHAR" property="integralReturnFlag"/>
+        <result column="hongmu_fund" jdbcType="DECIMAL" property="hongmuFund"/>
+    </resultMap>
+    <select id="findByCustomerNo" resultType="com.baibei.hengjia.api.modules.trade.bean.vo.DealOrderListVo"
+            parameterType="com.baibei.hengjia.api.modules.trade.bean.dto.DealOrderDto">
+        SELECT
+        o.buy_customer_no AS buyCustomerNo,
+        o.sell_customer_no AS sellCustomerNo,
+        o.deal_no AS dealNo,
+        e.direction AS direction,
+        o.create_time AS createTime,
+        o.price,
+        o.count,
+        o.product_trade_no AS productTradeNo,
+        m.product_trade_name AS productTradeName,
+        o.type,
+        e.customer_no as customerNo,
+        e.hold_type as entrustHoldType,
+        o.hold_type as dealHoldType,
+        m.spu_no as spuNo,
+        o.resource
+        FROM
+        tbl_tra_deal_order o
+        LEFT JOIN tbl_pro_product_market m ON o.product_trade_no = m.product_trade_no
+        LEFT JOIN tbl_tra_entrust_order e ON o.entrust_id = e.id
+        WHERE
+        (
+        o.buy_customer_no = #{customerNo}
+        OR o.sell_customer_no = #{customerNo}
+        )
+        <if test="startTime!=null and startTime!=''">
+            and date_format(o.create_time,'%Y-%m-%d') &gt;= date_format(#{startTime},'%Y-%m-%d')
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and date_format(o.create_time,'%Y-%m-%d') &lt;= date_format(#{endTime},'%Y-%m-%d')
+        </if>
+        and m.flag=1
+        ORDER BY
+        o.create_time DESC,o.id
+    </select>
+    <select id="selectCountByDate" parameterType="string" resultType="Integer">
+        select count(*) from tbl_tra_deal_order where DATE(create_time) =#{date} and (buy_customer_no=#{customerNo} or sell_customer_no=#{customerNo})
+    </select>
+
+    <select id="sumMoneyForBuy" parameterType="java.util.Map"
+            resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+        select t.buy_customer_no as customerNo,ifnull(sum(count*price),0) as total from tbl_tra_deal_order t
+        where 1=1
+and t.create_time between #{beginTime} and #{endTime}
+group by t.buy_customer_no
+    </select>
+
+    <select id="sumMoneyForSell" parameterType="java.util.Map"
+            resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+        select t.sell_customer_no as customerNo,ifnull(sum(count*price),0) as total from tbl_tra_deal_order t
+                where 1=1
+and t.create_time between #{beginTime} and #{endTime}
+group by t.sell_customer_no
+    </select>
+
+    <select id="sumFee" parameterType="java.util.Map"
+            resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+select c.customer_no as customerNo,ifnull(a.bcn_fee,0) + ifnull(b.scn_fee,0) as total from tbl_customer c LEFT join
+(select t.buy_customer_no,sum(t.buy_fee) bcn_fee from tbl_tra_deal_order t,tbl_customer c where t.buy_customer_no=c.customer_no
+and t.create_time between #{beginTime} and #{endTime}
+group by buy_customer_no)a
+on a.buy_customer_no=c.customer_no
+left join
+(select t.sell_customer_no,sum(t.sell_fee) scn_fee from tbl_tra_deal_order t,tbl_customer c where t.sell_customer_no=c.customer_no
+and t.create_time between #{beginTime} and #{endTime}
+group by sell_customer_no)b
+on  b.sell_customer_no=c.customer_no
+    </select>
+
+    <select id="tradeCount" parameterType="java.util.Map"
+            resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+select c.customer_no as customerNo,ifnull(a.bcn_count,0) + ifnull(b.scn_count,0) as total from tbl_customer c LEFT join
+(select t.buy_customer_no,count(1) bcn_count from tbl_tra_deal_order t,tbl_customer c where t.buy_customer_no=c.customer_no
+and t.create_time between #{beginTime} and #{endTime}
+group by buy_customer_no)a
+on a.buy_customer_no=c.customer_no
+left join
+(select t.sell_customer_no,count(1) scn_count from tbl_tra_deal_order t,tbl_customer c where t.sell_customer_no=c.customer_no
+and t.create_time between #{beginTime} and #{endTime}
+group by sell_customer_no)b
+on  b.sell_customer_no=c.customer_no
+    </select>
+
+    <select id="sumProfitAmountForSell" parameterType="java.util.Map"
+            resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+        select t.sell_customer_no as customerNo,ifnull(sum(t.count * t.price - t.integral - t.coupon_amount),0) as total from tbl_tra_deal_order t
+        where t.create_time between #{beginTime} and #{endTime}
+        group by t.sell_customer_no
+    </select>
+
+    <select id="sumLossAmountForBuy" parameterType="java.util.Map"
+            resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+    select t.buy_customer_no as customerNo,ifnull(sum(t.count * t.price),0) as total from tbl_tra_deal_order t
+    where t.create_time between #{beginTime} and #{endTime}
+    group by t.buy_customer_no
+    </select>
+
+    <select id="sumAllFee" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        select ifnull(sum(t.buy_fee+t.sell_fee),0) from tbl_tra_deal_order t
+        where 1=1
+        and t.create_time between #{beginTime} and #{endTime}
+    </select>
+
+    <select id="sumAllIntegral" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        select ifnull(sum(t.integral),0) from tbl_tra_deal_order t
+        where 1=1
+        and t.create_time between #{beginTime} and #{endTime}
+    </select>
+
+    <select id="sumAllCouponAmount"  parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        select ifnull(sum(t.coupon_amount),0) from tbl_tra_deal_order t
+        where 1=1
+        and t.create_time between #{beginTime} and #{endTime}
+    </select>
+
+    <select id="sumAllHongmuFund"  parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        select ifnull(sum(t.hongmu_fund),0) from tbl_tra_deal_order t
+        where 1=1
+        and t.create_time between #{beginTime} and #{endTime}
+    </select>
+
+    <select id="sumBuyCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select ifnull(sum(t.count),0) from tbl_tra_deal_order t
+        where 1=1
+        and t.buy_customer_no = #{buyCustomerNo}
+        and t.product_trade_no = #{productTradeNo}
+        and str_to_date(t.create_time, '%Y-%m-%d') = #{date}
+        AND ((t.type = 'buy' and t.hold_type='main') or (t.type='sell'))
+    </select>
+
+    <select id="sumSellCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select ifnull(sum(t.count),0) from tbl_tra_deal_order t
+        where 1=1
+        and t.sell_customer_no = #{sellCustomerNo}
+        and t.product_trade_no = #{productTradeNo}
+        and str_to_date(t.create_time, '%Y-%m-%d') = #{date}
+        AND ((t.type = 'buy' and t.hold_type='main') or (t.type='sell'))
+    </select>
+
+    <select id="findTradeProductNo" parameterType="String" resultType="String">
+        select product_trade_no from tbl_tra_deal_order where buy_customer_no=#{customerNo} AND ((type = 'buy' and hold_type='main')or(type='sell')) and date(create_time)=#{time} GROUP BY product_trade_no
+    </select>
+    <select id="sumIntegral" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from tbl_tra_deal_order t
+        where t.flag = 1
+        and (t.integral_return_flag is null or t.integral_return_flag = 'no')
+        and date_format(t.create_time,'%Y-%m-%d') = #{currentDate}
+    </select>
+
+    <select id="buyCountToday" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(*) from tbl_tra_deal_order t
+        where t.buy_customer_no = #{customerNo}
+        AND ((t.type = 'buy' and t.hold_type='main') or (t.type='sell'))
+        and DATE_FORMAT(t.create_time,'%Y-%m-%d') = #{date}
+    </select>
+
+    <select id="querySellList" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select * from tbl_tra_deal_order t
+        where 1=1
+        and t.sell_customer_no = #{customerNo}
+        and DATE_FORMAT(t.create_time,'%Y-%m-%d') = #{date}
+        <![CDATA[and t.entrust_id <> 0]]>
+    </select>
+
+    <select id="sumHongmuFund" parameterType="java.util.Map"
+            resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+        select t.sell_customer_no as customerNo,ifnull(sum(t.hongmu_fund),0) as total from tbl_tra_deal_order t
+    where t.create_time between #{beginTime} and #{endTime}
+    group by t.sell_customer_no
+    </select>
+</mapper>

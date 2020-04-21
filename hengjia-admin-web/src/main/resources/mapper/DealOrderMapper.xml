@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.tradingQuery.dao.DealOrderMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.tradingQuery.model.DealOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="deal_no" jdbcType="VARCHAR" property="dealNo" />
+    <result column="entrust_id" jdbcType="BIGINT" property="entrustId" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="buy_customer_no" jdbcType="VARCHAR" property="buyCustomerNo" />
+    <result column="sell_customer_no" jdbcType="VARCHAR" property="sellCustomerNo" />
+    <result column="buy_fee" jdbcType="DECIMAL" property="buyFee" />
+    <result column="sell_fee" jdbcType="DECIMAL" property="sellFee" />
+    <result column="profit" jdbcType="DECIMAL" property="profit" />
+    <result column="integral" jdbcType="DECIMAL" property="integral" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="hold_type" jdbcType="VARCHAR" property="holdType" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="count" jdbcType="INTEGER" property="count" />
+      <result column="resource" jdbcType="VARCHAR" property="resource"/>
+      <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+    <select id="pageList" resultType="com.baibei.hengjia.admin.modules.tradingQuery.bean.vo.DealOrderVo">
+    SELECT
+    d.deal_no,
+    DATE_FORMAT(d.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+    CASE
+	WHEN d.type='buy' THEN
+		'摘牌买入'
+	WHEN d.type='sell' THEN
+		'摘牌卖出'
+	WHEN d.type='plan' THEN
+	    '配售'
+    WHEN d.type='exchange' THEN
+        '兑换'
+    WHEN d.type='transfer' THEN
+        '非交易过户'
+    END type,
+    d.sell_customer_no,
+    d.buy_customer_no,
+    d.product_trade_no,
+    p.product_trade_name,
+    d.price,
+    d.count,
+    d.price*d.count as sumPrice,
+    e.entrust_no
+    FROM
+    tbl_tra_deal_order d
+    LEFT JOIN tbl_pro_product_market p ON d.product_trade_no = p.product_trade_no
+    LEFT JOIN tbl_tra_entrust_order e ON d.entrust_id = e.id
+    where 1=1
+    <if test="dealNo != null and dealNo !=''">
+        and d.deal_no = #{dealNo}
+    </if>
+    <if test="type != null and type !=''">
+        and d.type = #{type}
+    </if>
+    <if test="sellCustomerNo != null and sellCustomerNo !=''">
+        and d.sell_customer_no = #{sellCustomerNo}
+    </if>
+    <if test="buyCustomerNo != null and buyCustomerNo !=''">
+        and d.buy_customer_no = #{buyCustomerNo}
+    </if>
+    <if test="productTradeNo != null and productTradeNo !=''">
+        and d.product_trade_no = #{productTradeNo}
+    </if>
+    <if test="entrustNo != null and entrustNo !=''">
+        and e.entrust_no = #{entrustNo}
+    </if>
+        <if test="startTime!=null and startTime!=''">
+            and d.create_time &gt;= STR_TO_DATE(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and d.create_time &lt;= STR_TO_DATE(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+        </if>
+    order by d.create_time desc
+    </select>
+    <select id="findTradeFeeByCustomerNo" parameterType="string" resultType="BigDecimal">
+      SELECT
+	SUM(case when buy_customer_no = #{customerNo} then buy_fee else 0 end)+SUM(case when sell_customer_no = #{customerNo} then sell_fee else 0 end)
+FROM
+	tbl_tra_deal_order
+	where 1=1
+        <if test="startTime!=null and startTime!=''">
+            and create_time &gt;= STR_TO_DATE(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and create_time &lt;= STR_TO_DATE(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+        </if>
+    </select>
+  <select id="findSellMoneyByCustomer" parameterType="string" resultType="BigDecimal">
+    SELECT
+	ifnull(sum(price*count),0)
+    FROM
+	tbl_tra_deal_order
+	where sell_customer_no=#{customerNo} and date(create_time)=#{createTime}
+  </select>
+  <select id="dealOrderDataStatisticsVoList" resultType="com.baibei.hengjia.admin.modules.dataStatistics.bean.vo.DealOrderDataStatisticsVo" parameterType="com.baibei.hengjia.admin.modules.dataStatistics.bean.dto.DealOrderDataStatisticsDto">
+      SELECT
+	DATE(o.create_time) createTime,
+	customer_no customerNo,
+	c.username username,
+	s.cust_name realname,
+	m.product_trade_name productName,
+	m.product_trade_no productTradeNo
+FROM
+	tbl_customer c
+INNER JOIN tbl_tra_deal_order o on c.customer_no=o.buy_customer_no or c.customer_no=o.sell_customer_no
+INNER JOIN tbl_tra_signing_record s ON third_cust_id = c.customer_no and s.func_flag in (1,2)
+LEFT JOIN tbl_pro_product_market m on o.product_trade_no=m.product_trade_no
+where 1=1
+    <if test="customerNo!=null and customerNo!=''">
+      and c.customer_no = #{customerNo}
+    </if>
+    <if test="username!=null and username!=''">
+      and c.username like CONCAT('%',#{username},'%')
+    </if>
+    <if test="realname!=null and realname!=''">
+      and s.cust_name like CONCAT('%',#{realname},'%')
+    </if>
+      <if test="startTime!=null and startTime!=''">
+          and o.create_time &gt;= STR_TO_DATE(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+      </if>
+      <if test="endTime!=null and endTime!=''">
+          and o.create_time &lt;= STR_TO_DATE(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+      </if>
+      GROUP BY
+      DATE(o.create_time),customer_no
+      ORDER BY
+      date(o.create_time),customer_no DESC
+  </select>
+    <select id="findSellAmountByCustomerAndDate" parameterType="string" resultType="BigDecimal">
+    SELECT
+	ifnull(sum(count),0)
+    FROM
+	tbl_tra_deal_order
+	where sell_customer_no=#{customerNo} and date(create_time)=#{createTime}AND ((type = 'buy' and hold_type='main') or (type='sell'))
+  </select>
+    <select id="findBuyAmountByCustomerAndDate" parameterType="string" resultType="BigDecimal">
+    SELECT
+	ifnull(sum(count),0)
+    FROM
+	tbl_tra_deal_order
+	where buy_customer_no=#{customerNo} and date(create_time)=#{createTime} AND ((type = 'buy' and hold_type='main') or (type='sell'))
+  </select>
+    <select id="findBuyOrSellTradeFeeByCustomerNo" parameterType="string" resultType="BigDecimal">
+        SELECT
+        SUM(case when buy_customer_no = #{customerNo} then buy_fee else 0 end)+SUM(case when sell_customer_no = #{customerNo} then sell_fee else 0 end)
+        FROM
+        tbl_tra_deal_order
+        where date(create_time)=#{createTime} AND ((type = 'buy' and hold_type='main') or (type='sell'))
+    </select>
+</mapper>

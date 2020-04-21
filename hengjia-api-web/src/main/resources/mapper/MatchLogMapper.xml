@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.MatchLogMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.MatchLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="match_type" jdbcType="VARCHAR" property="matchType" />
+    <result column="match_num" jdbcType="INTEGER" property="matchNum" />
+    <result column="match_success_num" jdbcType="INTEGER" property="matchSuccessNum" />
+    <result column="match_money" jdbcType="DECIMAL" property="matchMoney" />
+    <result column="cost" jdbcType="DECIMAL" property="cost" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="period" jdbcType="DATE" property="period" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="match_status" jdbcType="VARCHAR" property="matchStatus" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+  <select id="selectCustomerNos" resultType="java.lang.String">
+  select c.customer_no from tbl_customer c where c.customer_no not in(select m.customer_no from tbl_tra_match_log m where m.match_type='SEND')
+  </select>
+
+  <select id="sumFee" parameterType="java.util.Map"
+          resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+    select t.customer_no as customerNo,ifnull(sum(t.fee),0) as total from tbl_tra_match_log t
+    where 1=1
+    and t.match_status in('SUCCESS','HALF_SUCCESS')
+    and t.create_time between #{beginTime} and #{endTime}
+    group by t.customer_no
+  </select>
+
+  <select id="sumLoss" parameterType="java.util.Map"
+          resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+    select t.customer_no as customerNo,ifnull(sum(t.cost),0) as total from tbl_tra_match_log t
+    where 1=1
+    and t.match_status in('SUCCESS','HALF_SUCCESS')
+    and t.create_time between #{beginTime} and #{endTime}
+    group by t.customer_no
+  </select>
+
+  <select id="sumCost" parameterType="java.util.Map"
+          resultType="java.math.BigDecimal">
+    select ifnull(sum(t.cost),0) from tbl_tra_match_log t
+    where 1=1
+    and t.match_status in('SUCCESS','HALF_SUCCESS')
+    and t.create_time between #{beginTime} and #{endTime}
+  </select>
+</mapper>

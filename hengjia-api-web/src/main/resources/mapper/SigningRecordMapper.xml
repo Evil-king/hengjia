@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.cash.dao.SigningRecordMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.cash.model.SigningRecord">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="sup_acct_id" jdbcType="VARCHAR" property="supAcctId" />
+    <result column="cust_acct_id" jdbcType="VARCHAR" property="custAcctId" />
+    <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+    <result column="id_type" jdbcType="VARCHAR" property="idType" />
+    <result column="id_code" jdbcType="VARCHAR" property="idCode" />
+    <result column="related_acct_id" jdbcType="VARCHAR" property="relatedAcctId" />
+    <result column="acct_flag" jdbcType="CHAR" property="acctFlag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="func_flag" jdbcType="TINYINT" property="funcFlag" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="tran_type" jdbcType="CHAR" property="tranType" />
+    <result column="acct_name" jdbcType="VARCHAR" property="acctName" />
+    <result column="bank_code" jdbcType="VARCHAR" property="bankCode" />
+    <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+    <result column="old_related_acct_id" jdbcType="VARCHAR" property="oldRelatedAcctId" />
+    <result column="reserve" jdbcType="VARCHAR" property="reserve" />
+    <result column="third_log_no" jdbcType="VARCHAR" property="thirdLogNo" />
+    <result column="third_cust_id" jdbcType="VARCHAR" property="thirdCustId" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+  <sql id="baseColumn">
+    id,sup_acct_id,cust_acct_id,cust_name,id_type,
+    id_code,related_acct_id,acct_flag,create_time,update_time,func_flag,remarks,
+    tran_type,acct_name,bank_code,bank_name,old_related_acct_id,reserve,third_log_no,third_cust_id,flag
+  </sql>
+
+  <select id="findSupAcctId" resultType="String">
+    select sup_acct_Id from tbl_tra_signing_record GROUP by sup_acct_Id
+  </select>
+
+  <select id="findTodaySigning" resultMap="BaseResultMap">
+   select
+   <include refid="baseColumn"/>
+   from tbl_tra_signing_record
+   <where>
+     and third_cust_id=#{customerNo}
+     and func_flag!='3'
+   </where>
+  </select>
+</mapper>

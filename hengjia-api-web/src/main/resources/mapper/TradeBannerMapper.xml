@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.TradeBannerMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.TradeBanner">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="seq" jdbcType="INTEGER" property="seq" />
+    <result column="member_no" jdbcType="VARCHAR" property="memberNo" />
+    <result column="link_url" jdbcType="VARCHAR" property="linkUrl" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <collection property="images" ofType="com.baibei.hengjia.api.modules.trade.model.TradeBannerImage"
+    select="com.baibei.hengjia.api.modules.trade.dao.TradeBannerImageMapper.selectBannerImgs" column="id">
+    </collection>
+  </resultMap>
+
+  <select id="selectMemberBanner" resultMap="BaseResultMap">
+    select * from tbl_tra_banner where member_no=#{memberNo}
+  </select>
+  <select id="selectSysBanner" resultMap="BaseResultMap">
+    select * from tbl_tra_banner where flag=1
+  </select>
+
+</mapper>

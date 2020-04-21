@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.account.dao.AccountMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.account.model.Account">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="total_balance" jdbcType="DECIMAL" property="totalBalance" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="salt" jdbcType="VARCHAR" property="salt" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="freezing_amount" jdbcType="DECIMAL" property="freezingAmount" />
+    <result column="withdrawable_cash" jdbcType="DECIMAL" property="withdrawableCash" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+  <update id="updateWithdrawTiming">
+    update tbl_account set withdrawable_cash=balance where customer_no=#{customerNo};
+  </update>
+    <select id="selectByCustomerDealOrder"
+            resultType="com.baibei.hengjia.api.modules.account.bean.vo.CustomerDealOrderVo">
+        	select t.customer_no,sum(t.remaind_count) as count from tbl_tra_hold_details t,tbl_customer c
+				where t.customer_no = c.customer_no
+				and t.cost = 960
+				and t.product_trade_no = '0002'
+				and c.deduction = 0
+				group by t.customer_no
+				having count >=5
+    </select>
+</mapper>

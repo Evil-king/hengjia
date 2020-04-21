@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.account.dao.CustomerIntegralMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.account.model.CustomerIntegral">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="integral_no" jdbcType="BIGINT" property="integralNo" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+  <select id="findIntegralDetailByCustomer" resultType="com.baibei.hengjia.api.modules.account.bean.vo.IntegralDetailVo" parameterType="com.baibei.hengjia.api.modules.account.bean.dto.IntegralDetailDto">
+    select c.username,cd.user_picture,i.balance
+  from (tbl_customer c INNER JOIN tbl_customer_detail cd on cd.customer_no=c.customer_no)
+  INNER JOIN tbl_customer_integral i on c.customer_no=i.customer_no and i.customer_no=#{customerNo} and i.integral_no=#{integralNo} and c.flag=1
+  </select>
+</mapper>

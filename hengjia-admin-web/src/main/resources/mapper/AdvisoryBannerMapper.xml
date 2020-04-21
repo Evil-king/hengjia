@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.advisory.dao.AdvisoryBannerMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.advisory.model.AdvisoryBanner">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="banner_title" jdbcType="VARCHAR" property="bannerTitle" />
+    <result column="banner_image" jdbcType="VARCHAR" property="bannerImage" />
+    <result column="banner_content" jdbcType="VARCHAR" property="bannerContent" />
+    <result column="banner_url" jdbcType="VARCHAR" property="bannerUrl" />
+    <result column="banner_sort" jdbcType="INTEGER" property="bannerSort" />
+    <result column="banner_display" jdbcType="VARCHAR" property="bannerDisplay" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+    <update id="updateByParams">
+      UPDATE tbl_advisory_banner SET
+      banner_title = #{bannerTitle},
+      banner_image = #{bannerImage},
+      banner_content = #{bannerContent},
+      banner_url = #{bannerUrl},
+      banner_sort = #{bannerSort},
+      banner_display = #{bannerDisplay},
+      flag = 1,
+      modify_time = #{modifyTime}
+      WHERE id = #{id}
+    </update>
+    <select id="objList" resultType="com.baibei.hengjia.admin.modules.advisory.bean.vo.AdvisoryBannerVo">
+      SELECT
+      b.id,
+      b.banner_title,
+      b.banner_image,
+      b.banner_url,
+      b.banner_sort,
+      b.banner_display,
+      DATE_FORMAT(b.create_time,'%Y-%m-%d %H:%i:%s') createTime,
+      DATE_FORMAT(b.modify_time,'%Y-%m-%d %H:%i:%s') modifyTime
+      FROM tbl_advisory_banner b
+      <where>
+        <if test="bannerTitle != null and bannerTitle !=''">
+          and b.banner_title like "%"#{bannerTitle}"%"
+        </if>
+        <if test="createTime !=null and createTime !=''">
+          and date(b.create_time) &gt;= #{createTime}
+        </if>
+        <if test="modifyTime !=null and modifyTime !=''">
+          and date(b.create_time) &lt;= #{modifyTime}
+        </if>
+      </where>
+      order by b.create_time desc,b.id
+    </select>
+    <select id="objIndex" resultType="com.baibei.hengjia.admin.modules.advisory.bean.vo.AdvisoryBannerVo">
+      SELECT
+      b.id,
+      b.banner_title,
+      b.banner_image,
+      b.banner_url,
+      b.banner_sort,
+      b.banner_display
+      FROM tbl_advisory_banner b
+      order by b.banner_sort desc
+    </select>
+  <select id="isDisplayFive" resultType="java.lang.Integer">
+    select count(1) from tbl_advisory_banner where banner_display = 'show'
+  </select>
+</mapper>

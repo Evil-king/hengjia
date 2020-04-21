@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.account.dao.CouponAccountMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.account.model.CouponAccount">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="coupon_type" jdbcType="VARCHAR" property="couponType" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="thaw_balance" jdbcType="DECIMAL" property="thawBalance" />
+    <result column="frozen_balance" jdbcType="DECIMAL" property="frozenBalance" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+    <select id="selectCouponAccount" resultType="com.baibei.hengjia.api.modules.account.bean.vo.CouponAccountVo">
+        SELECT
+            ca.id,
+            ca.customer_no customerNo,
+            ca.product_trade_no productTradeNo,
+            ca.coupon_type couponType,
+            ca.balance,
+            pm.product_trade_name productTradeName,
+            pm.issue_price issuePrice,
+            FLOOR(ca.balance/pm.issue_price) exchangenNum
+        FROM
+            tbl_cp_coupon_account ca
+        INNER JOIN tbl_pro_product_market pm ON ca.product_trade_no = pm.product_trade_no
+        <where>
+            <if test="customerNo!=null and customerNo!=''">
+                AND ca.customer_no = #{customerNo}
+            </if>
+            <if test="couponAccountId!=null">
+                AND ca.id=#{couponAccountId}
+            </if>
+             AND ca.coupon_type='vouchers'
+             AND pm.trade_status='trading'
+             AND ca.flag=1
+        </where>
+
+        ORDER BY ca.create_time DESC
+    </select>
+</mapper>

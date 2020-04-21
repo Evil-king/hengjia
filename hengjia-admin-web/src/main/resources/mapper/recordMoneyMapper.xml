@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.tradingQuery.dao.recordMoneyMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.tradingQuery.model.RecordMoney">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="record_no" jdbcType="VARCHAR" property="recordNo" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="trade_type" jdbcType="TINYINT" property="tradeType" />
+    <result column="withdraw" jdbcType="DECIMAL" property="withdraw" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="change_amount" jdbcType="VARCHAR" property="changeAmount" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="retype" jdbcType="TINYINT" property="retype" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+  <select id="pageList" parameterType="com.baibei.hengjia.admin.modules.tradingQuery.bean.dto.RecordMoneyDto" resultType="com.baibei.hengjia.admin.modules.tradingQuery.bean.vo.RecordMoneyVo">
+    select
+    r.customer_no as customerNo,
+    c.username as username,
+    c.mobile as mobile,
+    signing.acct_name as realName,
+    r.record_no as recordNo,
+    DATE_FORMAT(r.create_time,'%Y-%m-%d %H:%i:%s')  as createTime,
+    r.trade_type as tradeType,
+    r.retype as retype,
+    r.order_no as orderNo,
+    r.id as id,
+    r.change_amount as changeAmount
+    from tbl_record_money r
+    left join tbl_customer c on r.customer_no=c.customer_no
+    left join tbl_tra_signing_record signing on r.customer_no=signing.third_cust_id and signing.flag=1
+    where 1=1
+    <if test="customerNo!=null and customerNo!=''">
+      and r.customer_no = #{customerNo}
+    </if>
+    <if test="username!=null and username!=''">
+      and c.username = #{username}
+    </if>
+    <if test="mobile!=null and mobile!=''">
+      and c.mobile = #{mobile}
+    </if>
+    <if test="recordNo!=null and recordNo!=''">
+      and r.record_no = #{recordNo}
+    </if>
+    <if test="tradeType!=null and tradeType!=''">
+    and r.trade_type = #{tradeType}
+    </if>
+    <if test="retype!=null and retype!=''">
+    and r.retype = #{retype}
+    </if>
+    <if test="startTime!=null and startTime!=''">
+      and r.create_time &gt;= STR_TO_DATE(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+    </if>
+    <if test="endTime!=null and endTime!=''">
+      and r.create_time &lt;= STR_TO_DATE(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+    </if>
+    order by r.create_time desc
+  </select>
+  <select id="findSumByDateAndCustomerNoAndTradeType" resultType="BigDecimal" parameterType="string">
+    select IFNULL(sum(change_amount),0) from tbl_record_money where customer_no=#{customerNo} and trade_type=#{tradeType}
+    <if test="startTime!=null and startTime!=''">
+      and create_time &gt;= STR_TO_DATE(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+    </if>
+    <if test="endTime!=null and endTime!=''">
+      and create_time &lt;= STR_TO_DATE(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+    </if>
+  </select>
+</mapper>

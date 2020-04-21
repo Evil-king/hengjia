@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.DealHoldRefMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.DealHoldRef">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="deal_no" jdbcType="VARCHAR" property="dealNo" />
+    <result column="hold_details_id" jdbcType="BIGINT" property="holdDetailsId" />
+    <result column="deduct_count" jdbcType="DECIMAL" property="deductCount" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>

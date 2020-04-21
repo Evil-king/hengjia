@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.admin.dao.Dict_DetailMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.admin.model.Dict_Detail">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="label" jdbcType="VARCHAR" property="label" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="sort" jdbcType="VARCHAR" property="sort" />
+    <result column="dict_id" jdbcType="BIGINT" property="dictId" />
+  </resultMap>
+</mapper>

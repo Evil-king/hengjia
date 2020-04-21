@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.cash.dao.TempDepositMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.cash.model.TempDeposit">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="deposit_no" jdbcType="VARCHAR" property="depositNo" />
+    <result column="outorder_no" jdbcType="VARCHAR" property="outorderNo" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+</mapper>

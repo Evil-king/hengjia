@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.user.dao.CustomerAddressMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.user.model.CustomerAddress">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="receiving_address" jdbcType="VARCHAR" property="receivingAddress" />
+    <result column="receiving_name" jdbcType="VARCHAR" property="receivingName" />
+    <result column="receiving_mobile" jdbcType="VARCHAR" property="receivingMobile" />
+    <result column="default_address" jdbcType="BIT" property="defaultAddress" />
+    <result column="post_code" jdbcType="VARCHAR" property="postCode" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>

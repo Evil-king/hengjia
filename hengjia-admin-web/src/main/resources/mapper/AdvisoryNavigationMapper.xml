@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.advisory.dao.AdvisoryNavigationMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.advisory.model.AdvisoryNavigation">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="navigation_name" jdbcType="VARCHAR" property="navigationName" />
+    <result column="navigation_display" jdbcType="VARCHAR" property="navigationDisplay" />
+    <result column="navigation_sort" jdbcType="INTEGER" property="navigationSort" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+  <select id="objList" resultType="com.baibei.hengjia.admin.modules.advisory.bean.vo.AdvisoryNavigationVo">
+      SELECT
+      na.id,
+      na.navigation_name,
+      na.navigation_sort,
+      na.navigation_display,
+      DATE_FORMAT(na.create_time,'%Y-%m-%d %H:%i:%s') createTime,
+      DATE_FORMAT(na.modify_time,'%Y-%m-%d %H:%i:%s') modifyTime,
+      count(nb.type_id) as contentCount
+       FROM tbl_advisory_navigation na
+       LEFT JOIN tbl_advisory_navigation_details nb ON na.id=nb.navigation_id
+       <where>
+           <if test="navigationName != null and navigationName !=''">
+               and na.navigation_name like "%"#{navigationName}"%"
+           </if>
+           <if test="createTime !=null and createTime !=''">
+               and date(na.create_time) &gt;= #{createTime}
+           </if>
+           <if test="modifyTime != null and modifyTime !=''">
+               and date(na.create_time) &lt;= #{modifyTime}
+           </if>
+       </where>
+       GROUP BY na.id,na.navigation_name,na.navigation_sort,na.navigation_display,na.create_time,na.modify_time
+       ORDER BY na.create_time DESC,na.id
+  </select>
+    <select id="queryByNavigationId" resultType="java.lang.Integer">
+        select count(1) from tbl_advisory_navigation where id = #{navigationId}
+    </select>
+    <select id="compareNavigationName" resultType="java.lang.Integer">
+        select count(1) from tbl_advisory_navigation where navigation_name = #{navigationName}
+    </select>
+    <select id="isDisplayTen" resultType="java.lang.Integer">
+     select count(1) from tbl_advisory_navigation na where na.navigation_display = 'show'
+    </select>
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.settlement.dao.BankOrderMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.settlement.model.BankOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+    <result column="serial_no" jdbcType="INTEGER" property="serialNo" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="deal_flag" jdbcType="VARCHAR" property="dealFlag" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="member_no" jdbcType="VARCHAR" property="memberNo" />
+    <result column="sub_account" jdbcType="VARCHAR" property="subAccount" />
+    <result column="sub_account_name" jdbcType="VARCHAR" property="subAccountName" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="pay_fee_account" jdbcType="VARCHAR" property="payFeeAccount" />
+    <result column="pay_sub_account_name" jdbcType="VARCHAR" property="paySubAccountName" />
+    <result column="pay_date" jdbcType="VARCHAR" property="payDate" />
+    <result column="pay_time" jdbcType="VARCHAR" property="payTime" />
+    <result column="bank_serial_no" jdbcType="VARCHAR" property="bankSerialNo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+
+  <sql id="baseColumn">
+    t.id,
+	t.batch_no,
+	t.serial_no,
+	t.type,
+	t.deal_flag,
+	t.payer,
+	t.payee,
+	t.member_no,
+	t.sub_account,
+	t.sub_account_name,
+	t.amount,
+	t.fee,
+	t.pay_fee_account,
+	t.pay_sub_account_name,
+	t.bank_serial_no,
+	DATE_FORMAT(t.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+	DATE_FORMAT(t.modify_time,'%Y-%m-%d %H:%i:%s') modify_time,
+	CONCAT(DATE_FORMAT(t.pay_date,'%Y-%m-%d')," ",TIME_FORMAT(t.pay_time,'%H:%i:%s')) payTime,
+	t.flag
+  </sql>
+
+  <sql id="baseFilter">
+    <where>
+      <if test="batchNo!=null and batchNo!=''">
+        and t.batch_no = #{batchNo}
+      </if>
+      <if test="bankSerialNo!=null and bankSerialNo!=''">
+        and t.bank_serial_no = #{bankSerialNo}
+      </if>
+      <if test="startTime!=null and startTime!=''">
+        and DATE_FORMAT(t.pay_date,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+      </if>
+      <if test="endTime!=null and endTime!=''">
+        and DATE_FORMAT(t.pay_date,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+      </if>
+      <if test="type!=null and type!=''">
+        and t.type=#{type}
+      </if>
+      <if test="memberNo!=null and memberNo!=''">
+        and t.member_no=#{memberNo}
+      </if>
+    </where>
+  </sql>
+
+  <select id="myList" resultType="com.baibei.hengjia.admin.modules.settlement.bean.vo.BankOrderVo">
+    select
+      t.id as id,
+      t.batch_no as batchNo,
+      t.serial_no as serialNo,
+      t.type as type,
+      t.deal_flag as dealFlag,
+      t.payer as payer,
+      t.payee as payee,
+      t.member_no as memberNo,
+      t.sub_account as subAccount,
+      t.sub_account_name as subAccountName,
+      t.amount as amount,
+      t.fee as fee,
+      signing.acct_name as realName,
+      t.pay_fee_account as payFeeAccount,
+      t.pay_sub_account_name as paySubAccountName,
+      t.bank_serial_no as bankSerialNo,
+      DATE_FORMAT(t.create_time,'%Y-%m-%d %H:%i:%s') createTime,
+      DATE_FORMAT(t.modify_time,'%Y-%m-%d %H:%i:%s') modifyTime,
+      CONCAT(DATE_FORMAT(t.pay_date,'%Y-%m-%d')," ",TIME_FORMAT(t.pay_time,'%H:%i:%s')) payTime,
+      t.flag
+    from tbl_set_bank_order t left join tbl_tra_signing_record signing on t.member_no=signing .third_cust_id and signing.flag=1
+    <include refid="baseFilter"/>
+      order by t.create_time desc
+  </select>
+</mapper>

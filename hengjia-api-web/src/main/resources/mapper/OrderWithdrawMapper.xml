@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.cash.dao.OrderWithdrawMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.cash.model.OrderWithdraw">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="orderAmt" jdbcType="DECIMAL" property="orderamt" />
+    <result column="order_type" jdbcType="VARCHAR" property="orderType" />
+    <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+    <result column="handel_fee" jdbcType="DECIMAL" property="handelFee" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="reviewer" jdbcType="VARCHAR" property="reviewer" />
+    <result column="reviewer_time" jdbcType="TIMESTAMP" property="reviewerTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="effective" jdbcType="TINYINT" property="effective" />
+    <result column="external_no" jdbcType="VARCHAR" property="externalNo" />
+    <result column="sup_acct_Id" jdbcType="VARCHAR" property="supAcctId" />
+    <result column="cust_acct_Id" jdbcType="VARCHAR" property="custAcctId" />
+    <result column="remarks" jdbcType="LONGVARCHAR" property="remarks" />
+  </resultMap>
+  <select id="selectPeriodOrderList" resultMap="BaseResultMap">
+      select * from tbl_tra_order_withdraw where DATE_FORMAT(create_time,'%Y%m%d')=#{period}
+    </select>
+  <select id="selectPeriodOrderListNotInBankOrders" resultMap="BaseResultMap">
+       select * from tbl_tra_order_withdraw where DATE_FORMAT(create_time,'%Y%m%d')=#{period} and status!='5' and external_no not in(select bank_serial_no from tbl_set_bank_order where batch_no=#{period})
+    </select>
+
+  <select id="sumFee" parameterType="java.util.Map" resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerCountVo">
+    select t.customer_no as customerNo,ifnull(sum(t.handel_fee),0) as total from tbl_tra_order_withdraw t
+    where t.status = 4
+    and t.create_time between #{beginTime} and #{endTime}
+    group by t.customer_no
+  </select>
+
+  <select id="selectList" parameterType="java.util.List" resultMap="BaseResultMap">
+    select * from tbl_tra_order_withdraw w where w.status = '1' and w.order_no in
+    <foreach close=")" collection="list" index="index" item="item" open="(" separator=",">
+      #{item}
+    </foreach>
+  </select>
+
+  <select id="sumAmountOfCustomer" resultType="java.math.BigDecimal">
+    select SUM(w.orderAmt+w.handel_fee) as sumAmount from tbl_tra_order_withdraw w where w.status in('2','3','4') and w.customer_no=#{customerNo}
+    and  DATE_FORMAT(w.create_time,'%Y-%m-%d') = DATE_FORMAT(#{nowTime},'%Y-%m-%d')
+  </select>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.product.dao.ProductStockMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.product.model.ProductStock">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="spu_no" jdbcType="VARCHAR" property="spuNo" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="member_no" jdbcType="VARCHAR" property="memberNo" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="cost" jdbcType="DECIMAL" property="cost" />
+    <result column="putin_count" jdbcType="INTEGER" property="putinCount" />
+    <result column="replenish_count" jdbcType="INTEGER" property="replenishCount" />
+    <result column="total_count" jdbcType="INTEGER" property="totalCount" />
+    <result column="take_count" jdbcType="INTEGER" property="takeCount" />
+    <result column="remind_count" jdbcType="INTEGER" property="remindCount" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>

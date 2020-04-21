@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.tradingQuery.dao.ShpOrderMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.tradingQuery.model.ShpOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="address_id" jdbcType="INTEGER" property="addressId" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="order_status" jdbcType="VARCHAR" property="orderStatus" />
+    <result column="pay_channel" jdbcType="VARCHAR" property="payChannel" />
+    <result column="sum_point" jdbcType="DECIMAL" property="sumPoint" />
+    <result column="out_ordernum" jdbcType="VARCHAR" property="outOrdernum" />
+    <result column="logistics_no" jdbcType="VARCHAR" property="logisticsNo" />
+    <result column="logistics_company" jdbcType="VARCHAR" property="logisticsCompany" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="delivered_time" jdbcType="TIMESTAMP" property="deliveredTime" />
+    <result column="received_time" jdbcType="TIMESTAMP" property="receivedTime" />
+    <result column="remark" jdbcType="LONGVARCHAR" property="remark" />
+  </resultMap>
+  <select id="pageList" resultType="com.baibei.hengjia.admin.modules.tradingQuery.bean.vo.ShopOrderVo">
+      SELECT
+      s.order_no,
+      c.customer_no,
+      cd.acct_name as username,
+      c.member_no,
+      c.mobile as phone,
+      c.recommender_id,
+      s.sum_point,
+      a.receiving_name as receiveName,
+      CONCAT(a.province,a.city,a.area,a.receiving_address) as address,
+      a.receiving_address,
+      a.receiving_mobile as mobile,
+      s.logistics_no,
+      s.logistics_company,
+      CASE
+      WHEN s.order_status ='success' THEN
+      '待发货'
+      WHEN s.order_status ='delivered' THEN
+      '待收货'
+      WHEN s.order_status ='received' THEN
+      '已收货'
+      WHEN s.order_status ='fail' THEN
+      '已取消'
+      END status,
+      DATE_FORMAT(s.create_time,'%Y-%m-%d %H:%i:%s') startTime,
+      DATE_FORMAT(s.delivered_time,'%Y-%m-%d %H:%i:%s') endTime
+      FROM tbl_shp_order s LEFT JOIN tbl_customer c ON s.customer_no = c.customer_no LEFT JOIN tbl_customer_address a on s.address_id = a.id
+      LEFT JOIN tbl_tra_signing_record cd ON cd.third_cust_id = c.customer_no and cd.flag = '1'
+      <where>
+          <if test="orderNo != null and orderNo !=''">
+              and s.order_no = #{orderNo}
+          </if>
+          <if test="status != null and status !=''">
+              and s.order_status = #{status}
+          </if>
+          <if test="customerNo != null and customerNo!=''">
+              and c.customer_no = #{customerNo}
+          </if>
+          <if test="userName != null and userName!=''">
+              and cd.acct_name = #{userName}
+          </if>
+          <if test="memberNo != null and memberNo!=''">
+              and c.member_no = #{memberNo}
+          </if>
+          <if test="logisticsNo !=null and logisticsNo !=''">
+              and s.logistics_no =#{logisticsNo}
+          </if>
+          <if test="startTime != null and startTime!=''">
+              and date(s.create_time) &gt;= #{startTime}
+          </if>
+          <if test="endTime != null and endTime !=''">
+              and date(s.create_time) &lt;= #{endTime}
+          </if>
+      </where>
+    order by s.create_time desc
+    </select>
+  <select id="lookInfo" resultType="com.baibei.hengjia.admin.modules.tradingQuery.bean.vo.LookOrderDetailVo">
+    SELECT p.product_name,d.price,d.count,d.price*d.count as integral FROM tbl_shp_order_details d,tbl_pro_product p
+    where d.spu_no = p.spu_no and d.order_no=#{orderNo}
+  </select>
+    <select id="export" resultType="com.baibei.hengjia.admin.modules.tradingQuery.bean.vo.ShopOrderVo">
+        SELECT
+        s.order_no,
+        s.address_id,
+        c.customer_no,
+        cd.acct_name as username,
+        c.member_no,
+        c.mobile as phone,
+        c.recommender_id,
+        s.sum_point,
+        a.receiving_name as receiveName,
+        CONCAT(a.province,a.city,a.area,a.receiving_address) as address,
+        a.receiving_mobile as mobile,
+        s.logistics_no,
+        s.logistics_company,
+        p.product_name,
+        d.count,
+        d.price,
+        d.count*d.price as jifen,
+        CASE
+        WHEN s.order_status ='success' THEN
+            '待发货'
+        WHEN s.order_status ='delivered' THEN
+            '待收货'
+        WHEN s.order_status ='received' THEN
+        '已收货'
+        WHEN s.order_status ='fail' THEN
+        '已取消'
+        END status,
+        DATE_FORMAT(s.create_time,'%Y-%m-%d %H:%i:%s') startTime,
+        DATE_FORMAT(s.delivered_time,'%Y-%m-%d %H:%i:%s') endTime
+        FROM tbl_shp_order s LEFT JOIN tbl_customer c ON s.customer_no = c.customer_no LEFT JOIN tbl_customer_address a on s.address_id = a.id
+        LEFT JOIN tbl_shp_order_details d  ON s.order_no = d.order_no LEFT JOIN tbl_pro_product p on d.spu_no = p.spu_no
+        LEFT JOIN tbl_tra_signing_record cd ON cd.third_cust_id = c.customer_no and cd.flag = '1'
+        <where>
+            <if test="orderNo != null and orderNo !=''">
+                and s.order_no = #{orderNo}
+            </if>
+            <if test="status != null and status !=''">
+                and s.order_status = #{status}
+            </if>
+            <if test="customerNo != null and customerNo!=''">
+                and c.customer_no = #{customerNo}
+            </if>
+            <if test="userName != null and userName!=''">
+                and cd.acct_name = #{userName}
+            </if>
+            <if test="memberNo != null and memberNo!=''">
+                and c.member_no = #{memberNo}
+            </if>
+            <if test="logisticsNo !=null and logisticsNo !=''">
+                and s.logistics_no =#{logisticsNo}
+            </if>
+            <if test="startTime != null and startTime!=''">
+                and date(s.create_time) &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime !=''">
+                and date(s.create_time) &lt;= #{endTime}
+            </if>
+        </where>
+        order by s.order_no
+    </select>
+    <select id="selectByOrderNoExist" resultType="java.lang.Integer">
+        select count(1) from tbl_shp_order where order_no = #{orderNo}
+    </select>
+</mapper>

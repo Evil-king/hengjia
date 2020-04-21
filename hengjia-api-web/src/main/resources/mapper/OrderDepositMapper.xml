@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.cash.dao.OrderDepositMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.cash.model.OrderDeposit">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="order_amt" jdbcType="DECIMAL" property="orderAmt" />
+    <result column="order_type" jdbcType="VARCHAR" property="orderType" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="reserved01" jdbcType="VARCHAR" property="reserved01" />
+    <result column="reserved02" jdbcType="VARCHAR" property="reserved02" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="acct_date" jdbcType="TIMESTAMP" property="acctDate" />
+    <result column="ccy_code" jdbcType="CHAR" property="ccyCode" />
+    <result column="external_no" jdbcType="VARCHAR" property="externalNo" />
+    <result column="sup_acct_Id" jdbcType="VARCHAR" property="supAcctId" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="cust_acct_Id" jdbcType="VARCHAR" property="custAcctId"></result>
+  </resultMap>
+    <select id="selectPeriodOrderList" resultMap="BaseResultMap">
+       select * from tbl_tra_order_deposit where DATE_FORMAT(create_time,'%Y%m%d')=#{period};
+    </select>
+    <select id="selectPeriodOrderListNotInBankOrders" resultMap="BaseResultMap">
+        select * from tbl_tra_order_deposit
+        where DATE_FORMAT(create_time,'%Y%m%d')=#{period} and external_no not in(select bank_serial_no from tbl_set_bank_order where batch_no=#{period});
+    </select>
+</mapper>

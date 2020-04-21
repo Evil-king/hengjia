@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.advisory.dao.AdvisoryVideoMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.advisory.model.AdvisoryVideo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="navigation_id" jdbcType="VARCHAR" property="navigationId" />
+    <result column="video_title" jdbcType="VARCHAR" property="videoTitle" />
+    <result column="video_index" jdbcType="VARCHAR" property="videoIndex" />
+    <result column="video_type" jdbcType="VARCHAR" property="videoType" />
+    <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
+    <result column="video_sort" jdbcType="INTEGER" property="videoSort" />
+    <result column="video_display" jdbcType="VARCHAR" property="videoDisplay" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+    <select id="queryByParams" resultType="com.baibei.hengjia.api.modules.advisory.bean.vo.AdvisoryVideoVo">
+      select
+      video_title,
+      video_index,
+      video_type,
+      video_url,
+      video_sort,
+      DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') createTime
+      from tbl_advisory_video
+      where id = #{id} and video_display = 'show'
+      order by video_sort is null,create_time desc
+    </select>
+</mapper>

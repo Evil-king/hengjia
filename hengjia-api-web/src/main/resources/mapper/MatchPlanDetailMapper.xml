@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.match.dao.MatchPlanDetailMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.match.model.MatchPlanDetail">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="plan_id" jdbcType="BIGINT" property="planId" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="plan_no" jdbcType="VARCHAR" property="planNo" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="thaw_amount" jdbcType="DECIMAL" property="thawAmount" />
+    <result column="frozenAmount" jdbcType="DECIMAL" property="frozenAmount" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+  <select id="findbyPlanId" resultMap="BaseResultMap" parameterType="map">
+    select id,plan_id,customer_no,product_trade_no,type,status,plan_no,sum(price) price,thaw_amount thawAmount,frozen_amount frozenAmount,source,create_time,modify_time,flag from tbl_cp_match_plan_detail
+    where plan_id=#{id} and status=#{status} group by customer_no
+  </select>
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.advisory.dao.AdvisoryNavigationDetailsMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.advisory.model.AdvisoryNavigationDetails">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="navigation_id" jdbcType="BIGINT" property="navigationId" />
+    <result column="type_id" jdbcType="BIGINT" property="typeId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+    <select id="navigationDetails"
+            resultType="com.baibei.hengjia.api.modules.advisory.bean.vo.AdvisoryNavigationDetailsVo">
+      select
+      title,
+      image,
+      type,
+      type_id,
+      sort,
+      DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') create_time
+      from tbl_advisory_navigation_details
+      where navigation_id = #{id}
+      ORDER BY if(isnull(sort),1,0),sort,create_time DESC
+    </select>
+</mapper>

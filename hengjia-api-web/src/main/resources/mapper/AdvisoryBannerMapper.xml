@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.advisory.dao.AdvisoryBannerMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.advisory.model.AdvisoryBanner">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="banner_title" jdbcType="VARCHAR" property="bannerTitle" />
+    <result column="banner_image" jdbcType="VARCHAR" property="bannerImage" />
+    <result column="banner_content" jdbcType="VARCHAR" property="bannerContent" />
+    <result column="banner_url" jdbcType="VARCHAR" property="bannerUrl" />
+    <result column="banner_sort" jdbcType="INTEGER" property="bannerSort" />
+    <result column="banner_display" jdbcType="VARCHAR" property="bannerDisplay" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+    <select id="objIndex" resultType="com.baibei.hengjia.api.modules.advisory.bean.vo.AdvisoryBannerVo">
+      SELECT
+      b.id,
+      b.banner_title,
+      b.banner_image as url,
+      b.banner_url as linkUrl,
+      banner_content,
+      b.banner_sort,
+      DATE_FORMAT(b.create_time,'%Y-%m-%d %H:%i:%s') create_time
+      FROM tbl_advisory_banner b
+      where  b.banner_display='show'
+      ORDER BY if(isnull(b.banner_sort),1,0),banner_sort,create_time DESC
+    </select>
+</mapper>

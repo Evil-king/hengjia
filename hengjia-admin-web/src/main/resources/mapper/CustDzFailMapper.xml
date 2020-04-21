@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.settlement.dao.CustDzFailMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.settlement.model.CustDzFail">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+    <result column="cust_acct_id" jdbcType="VARCHAR" property="custAcctId" />
+    <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+    <result column="third_cust_id" jdbcType="VARCHAR" property="thirdCustId" />
+    <result column="bank_balance" jdbcType="DECIMAL" property="bankBalance" />
+    <result column="bank_frozen_amount" jdbcType="DECIMAL" property="bankFrozenAmount" />
+    <result column="hengjia_balance" jdbcType="DECIMAL" property="hengjiaBalance" />
+    <result column="hengjia_frozen_amount" jdbcType="DECIMAL" property="hengjiaFrozenAmount" />
+    <result column="balance_diff" jdbcType="DECIMAL" property="balanceDiff" />
+    <result column="frozen_diff" jdbcType="DECIMAL" property="frozenDiff" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+
+  <select id="list" parameterType="com.baibei.hengjia.admin.modules.settlement.bean.dto.CleanResultDto" resultMap="BaseResultMap">
+    select * from tbl_set_cust_dz_fail t where 1=1
+    <if test="customerNo != null and customerNo != ''">
+      and t.third_cust_id = #{customerNo}
+    </if>
+    <if test="startTime != null and endTime != null">
+      and str_to_date(t.batch_no,'%Y%m%d') between #{startTime} and #{endTime}
+    </if>
+    order by t.create_time desc
+  </select>
+</mapper>

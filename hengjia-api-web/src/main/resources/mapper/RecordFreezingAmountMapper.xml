@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.account.dao.RecordFreezingAmountMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.account.model.RecordFreezingAmount">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="record_no" jdbcType="VARCHAR" property="recordNo" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="change_amount" jdbcType="VARCHAR" property="changeAmount" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="trade_type" jdbcType="TINYINT" property="tradeType" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="retype" jdbcType="TINYINT" property="retype" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+
+  <select id="sumCustomerFrozenList" parameterType="java.util.Map" resultType="com.baibei.hengjia.api.modules.settlement.bean.vo.CustomerFrozenVo">
+    select c.customer_no as customerNo,ifnull(a.frozenTotal,0) as frozenTotal ,ifnull(b.unfrozenTotal,0) as unfrozenTotal from tbl_customer c left join
+    (select t.customer_no as customerNo,sum(t.change_amount) as frozenTotal from tbl_record_freezing_amount t
+    where 1=1
+    and t.trade_type = 102
+    and t.create_time between #{beginTime} and #{endTime}
+    group by t.customer_no) a on c.customer_no = a.customerNo
+    left join
+    (select t.customer_no as customerNo,sum(t.change_amount) as unfrozenTotal from tbl_record_freezing_amount t
+    where 1=1
+    and t.trade_type in(103,104)
+    and t.create_time between #{beginTime} and #{endTime}
+    group by t.customer_no) b on c.customer_no = b.customerNo
+  </select>
+</mapper>

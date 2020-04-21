@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.match.dao.ExchangeLogMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.match.model.ExchangeLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="exchange_no" jdbcType="VARCHAR" property="exchangeNo" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="member_no" jdbcType="VARCHAR" property="memberNo" />
+    <result column="exchange_num" jdbcType="INTEGER" property="exchangeNum" />
+    <result column="retail_price" jdbcType="DECIMAL" property="retailPrice" />
+    <result column="total_price" jdbcType="DECIMAL" property="totalPrice" />
+    <result column="coupon_price" jdbcType="DECIMAL" property="couponPrice" />
+    <result column="real_price" jdbcType="DECIMAL" property="realPrice" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="exchange_time" jdbcType="TIMESTAMP" property="exchangeTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+  <select id="selectCurrentDayExchangeCount" resultType="java.lang.Integer">
+      select sum(exchange_num) from tbl_cp_exchange_log where DATE_FORMAT(create_time,'%Y%m%d')=DATE_FORMAT(SYSDATE(),'%Y%m%d')
+      and customer_no=#{customerNo} and product_trade_no=#{productTradeNo};
+    </select>
+
+</mapper>

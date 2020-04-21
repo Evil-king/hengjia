@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.settlement.dao.SigningRecordMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.settlement.model.SigningRecord">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="sup_acct_Id" jdbcType="VARCHAR" property="supAcctId" />
+    <result column="cust_acct_Id" jdbcType="VARCHAR" property="custAcctId" />
+    <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+    <result column="id_type" jdbcType="VARCHAR" property="idType" />
+    <result column="id_code" jdbcType="VARCHAR" property="idCode" />
+    <result column="related_acct_Id" jdbcType="VARCHAR" property="relatedAcctId" />
+    <result column="acct_flag" jdbcType="CHAR" property="acctFlag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="func_flag" jdbcType="TINYINT" property="funcFlag" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="tran_type" jdbcType="CHAR" property="tranType" />
+    <result column="acct_name" jdbcType="VARCHAR" property="acctName" />
+    <result column="bank_code" jdbcType="VARCHAR" property="bankCode" />
+    <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+    <result column="old_related_acct_Id" jdbcType="VARCHAR" property="oldRelatedAcctId" />
+    <result column="reserve" jdbcType="VARCHAR" property="reserve" />
+    <result column="third_log_no" jdbcType="VARCHAR" property="thirdLogNo" />
+    <result column="third_cust_id" jdbcType="VARCHAR" property="thirdCustId" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>

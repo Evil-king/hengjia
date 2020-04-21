@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.tradingQuery.dao.HoldTotalMapper">
+    <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.tradingQuery.model.HoldTotal">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="customer_no" jdbcType="VARCHAR" property="customerNo"/>
+        <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo"/>
+        <result column="total_count" jdbcType="DECIMAL" property="totalCount"/>
+        <result column="frozen_count" jdbcType="DECIMAL" property="frozenCount"/>
+        <result column="can_sell_count" jdbcType="DECIMAL" property="canSellCount"/>
+        <result column="cost" jdbcType="DECIMAL" property="cost"/>
+        <result column="hold_type" jdbcType="VARCHAR" property="holdType"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="flag" jdbcType="TINYINT" property="flag"/>
+    </resultMap>
+
+    <select id="findUserByHoldTotal" resultType="com.baibei.hengjia.admin.modules.tradingQuery.bean.vo.HoldTotalVo">
+        select
+        total.id as id,
+        customer.customer_no as customerNo,
+        customer.username as userName,
+        customer.mobile as phoneNumber,
+        signing.acct_name as realName,
+        customer.recommender_id as directRecommendation,
+        market.product_trade_name as productName,
+        total.product_trade_no as productTradeNo,
+        total.hold_type as holdType,
+        total.total_count as productNumber,
+        total.frozen_count as frozenCount,
+        total.can_sell_count as canSellCount,
+        market.issue_price as latestPrice,
+        (total.total_count*market.issue_price) as holdPositionsPrice
+        from
+        tbl_tra_hold_total total left join tbl_customer customer on total.customer_no=customer.customer_no
+        left join tbl_tra_signing_record signing on customer.customer_no=signing.third_cust_id and signing.flag=1
+        left join tbl_pro_product_market market on market.product_trade_no=total.product_trade_no
+        <where>
+            <if test="customerNo!=null and phoneNumber!=''">
+                and customer.customer_no=#{customerNo}
+            </if>
+            <if test="phoneNumber!=null and phoneNumber!=''">
+                and customer.mobile =#{phoneNumber}
+            </if>
+            <if test="productTradeNo!=null and productTradeNo!=''">
+                and total.product_trade_no=#{productTradeNo}
+            </if>
+        </where>
+        order by total.create_time desc
+    </select>
+</mapper>

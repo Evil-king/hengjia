@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.advisory.dao.AdvisoryNavigationDetailsMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.advisory.model.AdvisoryNavigationDetails">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="navigation_id" jdbcType="BIGINT" property="navigationId" />
+    <result column="type_id" jdbcType="BIGINT" property="typeId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+    <update id="updateByParams">
+      update tbl_advisory_navigation_details set
+      sort = #{sort},
+      modify_time = #{modifyTime}
+      where id = #{id}
+    </update>
+    <select id="objList"
+            resultType="com.baibei.hengjia.admin.modules.advisory.bean.vo.AdvisoryNavigationDetailVo">
+      SELECT
+      nb.id,
+      nb.type_id,
+      nb.title,
+      nb.image,
+      nb.type,
+      nb.url,
+      nb.sort,
+      DATE_FORMAT(nb.create_time,'%Y-%m-%d %H:%i:%s') createTime
+      FROM
+      tbl_advisory_navigation_details nb,tbl_advisory_navigation na
+      where nb.navigation_id = na.id and nb.flag = 1
+      <if test = "title != null and title !=''">
+        and title like "%"#{title}"%"
+      </if>
+      <if test = "createTime != null and createTime !=''">
+        and date(nb.create_time) >= #{createTime}
+      </if>
+      <if test = "modifyTime != null and modifyTime !=''">
+        and date(nb.create_time) &lt;= #{modifyTime}
+      </if>
+        ORDER BY nb.create_time DESC
+    </select>
+
+  <select id="objListByNavigationId"
+          resultType="com.baibei.hengjia.admin.modules.advisory.bean.vo.AdvisoryNavigationDetailVo">
+    SELECT
+    nb.id,
+    nb.type_id,
+    nb.title,
+    nb.image,
+    nb.type,
+    nb.url,
+    nb.sort,
+    DATE_FORMAT(nb.create_time,'%Y-%m-%d %H:%i:%s') createTime,
+    DATE_FORMAT(nb.modify_time,'%Y-%m-%d %H:%i:%s') modifyTime
+    FROM
+    tbl_advisory_navigation_details nb,tbl_advisory_navigation na
+    where nb.navigation_id = na.id and nb.flag = 1 and nb.navigation_id = #{navigationId}
+    ORDER BY nb.create_time DESC
+  </select>
+</mapper>

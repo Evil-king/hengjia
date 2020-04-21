@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.admin.dao.RoleMapper">
+    <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.admin.model.Role">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="data_scope" jdbcType="VARCHAR" property="dataScope"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
+    </resultMap>
+
+    <select id="findByUserRole" resultMap="BaseResultMap">
+      select
+      role.id,
+      role.name,
+      role.remark,
+      role.create_time,
+      role.data_scope,
+      role.level
+      from
+     tbl_admin_role role left join tbl_admin_users_roles users_roles on role.id=users_roles.role_id
+     <where>
+         users_roles.user_id=#{userId}
+     </where>
+     order by role.level ASC
+    </select>
+</mapper>

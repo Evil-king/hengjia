@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.customer.dao.CustomerMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.customer.model.Customer">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="member_no" jdbcType="VARCHAR" property="memberNo" />
+    <result column="recommender_id" jdbcType="VARCHAR" property="recommenderId" />
+    <result column="customer_type" jdbcType="TINYINT" property="customerType" />
+    <result column="customer_status" jdbcType="VARCHAR" property="customerStatus" />
+    <result column="salt" jdbcType="VARCHAR" property="salt" />
+    <result column="qrcode" jdbcType="VARCHAR" property="qrcode" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+    <result column="signing" jdbcType="CHAR" property="signing" />
+  </resultMap>
+  <select id="pageList" parameterType="com.baibei.hengjia.admin.modules.customer.bean.dto.CustomerDto" resultType="com.baibei.hengjia.admin.modules.customer.bean.vo.CustomerVo">
+    select * from (SELECT
+    c.id AS id,
+    c.customer_no AS customerNo,
+    c.username AS username,
+    c.customer_type AS customerType,
+    d.cust_name AS realname,
+    c.mobile AS mobile,
+    c.member_no AS memberNo,
+    c.recommender_id AS recommenderNo,
+    ifnull(a.balance,0) AS balance,
+    ifnull(a.withdrawable_cash,0) AS withdrawCash,
+    ifnull(a.freezing_amount,0) AS frozenMoney,
+    DATE_FORMAT(c.create_time,'%Y-%m-%d %H:%i:%s')  AS createTime,
+    c.customer_status AS STATUS,
+    d.id_code as idCard,
+    (case when e.isPickUp is null then 0 when e.isPickUp>=1 then 1 else 2 end) isPickUp
+    FROM
+    tbl_customer c
+    LEFT JOIN tbl_account a ON c.customer_no = a.customer_no
+    LEFT JOIN tbl_tra_signing_record d ON c.customer_no = d.third_cust_id and d.flag=1
+    LEFT JOIN (select td.customer_no, COUNT(1) isPickUp from tbl_tra_delivery td where  td.delivery_status in ('20','30','40') group by td.customer_no)e
+    ON c.customer_no = e.customer_no
+    where 1=1
+    <if test="customerNo!=null and customerNo!=''">
+      and c.customer_no = #{customerNo}
+    </if>
+    <if test="username!=null and username!=''">
+      and c.username like CONCAT('%',#{username},'%')
+    </if>
+    <if test="mobile!=null and mobile!=''">
+      and c.mobile = #{mobile}
+    </if>
+    <if test="customerType!=null and customerType!=''">
+      and c.customer_type = #{customerType}
+    </if>
+    <if test="realname!=null and realname!=''">
+      and d.cust_name like CONCAT('%',#{realname},'%')
+    </if>
+    <if test="status!=null and status!=''">
+      and c.customer_status like CONCAT('%',#{status},'%')
+    </if>
+    <if test="memberNo!=null and memberNo!=''">
+      and c.member_no = #{memberNo}
+    </if>
+    <if test="startTime!=null and startTime!=''">
+      and c.create_time &gt;= STR_TO_DATE(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+    </if>
+    <if test="endTime!=null and endTime!=''">
+      and c.create_time &lt;= STR_TO_DATE(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+    </if>
+    group by c.customer_no order by c.create_time desc
+    )a
+    where 1=1
+    <if test="isPickUp==0">
+      and a.isPickUp=0
+    </if>
+    <if test="isPickUp==1">
+      and a.isPickUp=1
+    </if>
+  </select>
+  <select id="integralPageList" parameterType="com.baibei.hengjia.admin.modules.dataStatistics.bean.dto.CustomerIntegralDto" resultType="com.baibei.hengjia.admin.modules.dataStatistics.bean.vo.CustomerIntegralVo">
+    SELECT
+    c.id id,
+    c.customer_no customerNo,
+    c.username username,
+    d.cust_name realname
+    FROM
+    tbl_customer c
+    LEFT JOIN tbl_tra_signing_record d ON c.customer_no = d.third_cust_id
+    where
+    1=1 and d.func_flag in(1,2)
+    <if test="customerNo!=null and customerNo!=''">
+      and c.customer_no = #{customerNo}
+    </if>
+    <if test="username!=null and username!=''">
+      and c.username like CONCAT('%',#{username},'%')
+    </if>
+    <if test="realname!=null and realname!=''">
+      and d.cust_name like CONCAT('%',#{realname},'%')
+    </if>
+    GROUP BY c.customer_no,d.cust_name ORDER BY c.id
+  </select>
+</mapper>

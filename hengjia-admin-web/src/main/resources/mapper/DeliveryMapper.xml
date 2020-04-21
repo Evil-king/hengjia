@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.tradingQuery.dao.DeliveryMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.tradingQuery.model.Delivery">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="product_trade_name" jdbcType="VARCHAR" property="productTradeName" />
+    <result column="issue_price" jdbcType="DECIMAL" property="issuePrice" />
+    <result column="hold_type" jdbcType="VARCHAR" property="holdType" />
+    <result column="address_id" jdbcType="BIGINT" property="addressId" />
+    <result column="delivery_no" jdbcType="VARCHAR" property="deliveryNo" />
+    <result column="logistics_no" jdbcType="VARCHAR" property="logisticsNo" />
+    <result column="delivery_status" jdbcType="INTEGER" property="deliveryStatus" />
+    <result column="delivery_time" jdbcType="TIMESTAMP" property="deliveryTime" />
+    <result column="audit_time" jdbcType="TIMESTAMP" property="auditTime" />
+    <result column="pending_time" jdbcType="TIMESTAMP" property="pendingTime" />
+    <result column="receive_time" jdbcType="TIMESTAMP" property="receiveTime" />
+    <result column="logistics_type" jdbcType="VARCHAR" property="logisticsType" />
+    <result column="logistics_company" jdbcType="VARCHAR" property="logisticsCompany" />
+    <result column="storage_charge" jdbcType="DECIMAL" property="storageCharge" />
+    <result column="clearance_charge" jdbcType="DECIMAL" property="clearanceCharge" />
+    <result column="freight" jdbcType="DECIMAL" property="freight" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="delivery_count" jdbcType="INTEGER" property="deliveryCount" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+
+  <sql id="baseColumn">
+    t.id,
+    t.customer_no,
+    t.product_id,
+    t.product_trade_no,
+    t.product_trade_name,
+    t.issue_price,
+    case
+    when t.hold_type = 'match' and t.source = 'exchange'
+    then '兑换商品'
+    when t.hold_type = 'match' and t.source != 'exchange'
+    then '折扣商品'
+    when t.hold_type = 'main'
+    then '零售商品'
+    end hold_type,
+    t.source,
+    t.address_id,
+    t.delivery_no,
+    t.logistics_no,
+    t.delivery_status,
+    DATE_FORMAT(t.delivery_time,'%Y-%m-%d %H:%i:%s') delivery_time,
+    DATE_FORMAT(t.audit_time,'%Y-%m-%d %H:%i:%s') audit_time,
+    DATE_FORMAT(t.pending_time,'%Y-%m-%d %H:%i:%s') pending_time,
+    DATE_FORMAT(t.receive_time,'%Y-%m-%d %H:%i:%s') receive_time,
+    t.logistics_type,
+    t.logistics_company,
+    t.storage_charge,
+    t.clearance_charge,
+    t.freight,
+    t.remark,
+    t.delivery_count,
+    DATE_FORMAT(t.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+	DATE_FORMAT(t.modify_time,'%Y-%m-%d %H:%i:%s') modify_time,
+	t.flag
+  </sql>
+    <select id="myList" resultType="com.baibei.hengjia.admin.modules.tradingQuery.bean.vo.DeliveryVo">
+      select
+      <include refid="baseColumn"/>,
+      c.mobile,
+      CONCAT(addr.province,addr.city,addr.area,addr.receiving_address) receiving_address,
+      addr.receiving_name,
+      addr.receiving_mobile
+      from tbl_tra_delivery t
+      left join tbl_customer c on t.customer_no=c.customer_no and c.flag=1
+      left join tbl_customer_address addr on t.address_id=addr.id
+      <include refid="baseFilter"/>
+      order by t.delivery_time desc
+    </select>
+  <sql id="baseFilter">
+    <where>
+      <if test="deliveryNo!=null and deliveryNo!=''">
+        and t.delivery_no = #{deliveryNo}
+      </if>
+      <if test="source == 'unExchange' and source !=null ">
+        and t.hold_type = 'match' and t.source != 'exchange'
+      </if>
+      <if test="source == 'exchange' and source !=null">
+        and t.hold_type = 'match' and t.source = 'exchange'
+      </if>
+      <if test="holdType!=null and holdType!=''">
+        and t.hold_type = 'main'
+      </if>
+      <if test="customerNo!=null and customerNo!=''">
+        and t.customer_no = #{customerNo}
+      </if>
+      <if test="deliveryStatus!=null and deliveryStatus!=''">
+        and t.delivery_status = #{deliveryStatus}
+      </if>
+      <if test="productTradeNo!=null and productTradeNo!=''">
+        and t.product_trade_no = #{productTradeNo}
+      </if>
+      <if test="startTime!=null and startTime!=''">
+        and DATE_FORMAT(t.delivery_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+      </if>
+      <if test="endTime!=null and endTime!=''">
+        and DATE_FORMAT(t.delivery_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+      </if>
+    </where>
+  </sql>
+
+
+  <select id="exportList" resultType="com.baibei.hengjia.admin.modules.tradingQuery.bean.vo.DeliveryExportVo">
+    select
+    t.delivery_no,
+    t.customer_no,
+    c.mobile,
+    DATE_FORMAT(t.delivery_time,'%Y-%m-%d %H:%i:%s') delivery_time,
+    t.product_trade_no,
+    t.product_trade_name,
+    case
+    when t.hold_type = 'match' and t.source = 'exchange'
+    then '兑换商品'
+    when t.hold_type = 'match' and t.source != 'exchange'
+    then '折扣商品'
+    when t.hold_type = 'main'
+    then '零售商品'
+    end hold_type,
+    t.delivery_count,
+    t.issue_price,
+    DATE_FORMAT(t.pending_time,'%Y-%m-%d %H:%i:%s') pending_time,
+    t.logistics_company,
+    t.logistics_no,
+    t.storage_charge,
+    t.clearance_charge,
+    t.freight,
+    DATE_FORMAT(t.receive_time,'%Y-%m-%d %H:%i:%s') receive_time,
+    CONCAT(addr.province,addr.city,addr.area,addr.receiving_address) receiving_address,
+    addr.receiving_mobile,
+    case
+    when t.delivery_status = '10'
+    then '待审核'
+    when t.delivery_status = '20'
+    then '待发货'
+    when t.delivery_status = '30'
+    then '已发货'
+    when t.delivery_status = '40'
+    then '已收货'
+    end delivery_status,
+    DATE_FORMAT(t.audit_time,'%Y-%m-%d %H:%i:%s') audit_time,
+    DATE_FORMAT(t.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+    DATE_FORMAT(t.modify_time,'%Y-%m-%d %H:%i:%s') modify_time,
+    t.flag,
+    addr.receiving_name,
+    t.remark
+    from tbl_tra_delivery t
+    left join tbl_customer c on t.customer_no=c.customer_no and c.flag=1
+    left join tbl_customer_address addr on t.address_id=addr.id
+    <where>
+      <if test="deliveryNo!=null and deliveryNo!=''">
+        and t.delivery_no = #{deliveryNo}
+      </if>
+      <if test="source == 'unExchange' and source !=null ">
+        and t.hold_type = 'match' and t.source != 'exchange'
+      </if>
+      <if test="source == 'exchange' and source !=null">
+        and t.hold_type = 'match' and t.source = 'exchange'
+      </if>
+      <if test="holdType!=null and holdType!=''">
+        and t.hold_type = 'main'
+      </if>
+      <if test="customerNo!=null and customerNo!=''">
+        and t.customer_no = #{customerNo}
+      </if>
+      <if test="deliveryStatus!=null and deliveryStatus!=''">
+        and t.delivery_status = #{deliveryStatus}
+      </if>
+      <if test="productTradeNo!=null and productTradeNo!=''">
+        and t.product_trade_no = #{productTradeNo}
+      </if>
+      <if test="startTime!=null and startTime!=''">
+        and DATE_FORMAT(t.delivery_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+      </if>
+      <if test="endTime!=null and endTime!=''">
+        and DATE_FORMAT(t.delivery_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+      </if>
+    </where>
+    order by t.delivery_time desc
+  </select>
+    <select id="selectByOrderNoExist" resultType="java.lang.Integer">
+      select count(1) from tbl_tra_delivery where delivery_no = #{deliveryNo}
+    </select>
+</mapper>

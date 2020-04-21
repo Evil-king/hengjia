@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.tradingQuery.dao.HoldDetailsMapper">
+    <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.tradingQuery.model.HoldDetails">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="customer_no" jdbcType="VARCHAR" property="customerNo"/>
+        <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo"/>
+        <result column="original_count" jdbcType="DECIMAL" property="originalCount"/>
+        <result column="frozen_count" jdbcType="DECIMAL" property="frozenCount"/>
+        <result column="remaind_count" jdbcType="DECIMAL" property="remaindCount"/>
+        <result column="cost" jdbcType="DECIMAL" property="cost"/>
+        <result column="trade_time" jdbcType="TIMESTAMP" property="tradeTime"/>
+        <result column="hold_no" jdbcType="VARCHAR" property="holdNo"/>
+        <result column="hold_time" jdbcType="TIMESTAMP" property="holdTime"/>
+        <result column="resource" jdbcType="VARCHAR" property="resource"/>
+        <result column="scanner" jdbcType="TINYINT" property="scanner"/>
+        <result column="hold_type" jdbcType="VARCHAR" property="holdType"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="flag" jdbcType="TINYINT" property="flag"/>
+    </resultMap>
+
+    <select id="findUserHoldDetails" resultType="com.baibei.hengjia.admin.modules.tradingQuery.bean.vo.HoldDetailsVo">
+        select
+        DATE_FORMAT(details.hold_time,'%Y-%m-%d') as holdTime,
+        details.hold_no as holdNo,
+        details.product_trade_no as productTradeNo,
+        market.product_trade_name as productName,
+        details.hold_type as holdType,
+        details.scanner as scanner,
+        details.remaind_count as remaindCount,
+        details.frozen_count as frozenCount,
+        market.issue_price as latestPrice,
+        ((details.remaind_count+details.frozen_count)*market.issue_price)as holdPositionsPrice,
+        details.resource as resource
+        from
+        tbl_tra_hold_details details left join tbl_pro_product_market market on
+        details.product_trade_no=market.product_trade_no
+        <where>
+            customer_no=#{customerNo}
+            <if test="startTime!=null">
+                and <![CDATA[details.hold_time>=#{startTime}]]>
+            </if>
+            <if test="endTime!=null">
+                and <![CDATA[details.hold_time<=#{endTime}]]>
+            </if>
+            <if test="holdType!=null">
+                and details.hold_type=#{holdType}
+            </if>
+        </where>
+        order by details.hold_time desc
+    </select>
+
+</mapper>

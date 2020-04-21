@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.cash.dao.AccountBookMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.cash.model.AccountBook">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="cust_acctId" jdbcType="VARCHAR" property="custAcctid" />
+    <result column="cust_flag" jdbcType="TINYINT" property="custFlag" />
+    <result column="cust_type" jdbcType="TINYINT" property="custType" />
+    <result column="cust_status" jdbcType="TINYINT" property="custStatus" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="main_acctId" jdbcType="VARCHAR" property="mainAcctid" />
+    <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+    <result column="total_amount" jdbcType="DECIMAL" property="totalAmount" />
+    <result column="total_balance" jdbcType="DECIMAL" property="totalBalance" />
+    <result column="total_freeze_amount" jdbcType="DECIMAL" property="totalFreezeAmount" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="tran_date" jdbcType="VARBINARY" property="tranDate" />
+  </resultMap>
+
+    <delete id="clear">
+      	TRUNCATE tbl_tra_account_book;
+    </delete>
+</mapper>

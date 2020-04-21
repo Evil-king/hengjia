@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.match.dao.BuymatchUserMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.match.model.BuymatchUser">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+    <result column="deal_no" jdbcType="VARCHAR" property="dealNo" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="match_num" jdbcType="DECIMAL" property="matchNum" />
+      <result column="status" jdbcType="VARCHAR" property="status" />
+      <result column="operate_type" jdbcType="VARCHAR" property="operateType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+    <update id="updateStatusWithRun">
+        update tbl_ph_buymatch_user set status = 'run',modify_time=now() where status='unrun' and customer_no=#{customerNo} and batch_no=#{batchNo} and product_trade_no=#{productTradeNo}
+    </update>
+    <select id="selectCustomerNos" resultType="com.baibei.hengjia.api.modules.match.bean.vo.BuymatchUsersVo">
+        /*SELECT
+            d.buy_customer_no customerNo,
+            d.product_trade_no productTradeNo,
+            d.type,
+            d.hold_type holdType
+        FROM
+            tbl_tra_deal_order d
+        WHERE
+            d.product_trade_no IN (
+                SELECT
+                    pm.product_trade_no
+                FROM
+                    tbl_pro_product_market pm
+                WHERE
+                    pm.match_rule = 'buyMatch'
+            )
+        AND ((type = 'buy' and hold_type='main') or (type='sell'))
+        AND DATE_FORMAT(d.create_time, 'Y%m%d') = DATE_FORMAT(SYSDATE(), 'Y%m%d')
+        AND d.buy_customer_no NOT IN (
+            SELECT DISTINCT ph.customer_no FROM tbl_ph_buymatch_log ph WHERE ph.batch_no = DATE_FORMAT(SYSDATE(), '%Y%m%d') and ph.type = 'common'
+            UNION
+            SELECT DISTINCT phf.customer_no FROM tbl_ph_match_fail_log phf WHERE DATE_FORMAT(phf.create_time, '%Y%m%d') = DATE_FORMAT(SYSDATE(), '%Y%m%d')
+        )
+        GROUP BY
+            d.product_trade_no,
+            d.buy_customer_no*/
+
+       SELECT
+        d.buy_customer_no customerNo,
+        d.product_trade_no productTradeNo,
+        d.type,
+        d.hold_type holdType
+        FROM
+            tbl_tra_deal_order d,tbl_pro_product_market pm
+        WHERE
+         pm.match_rule = 'buyMatch' and  d.product_trade_no=pm.product_trade_no
+        AND ((type = 'buy' and hold_type='main') or (type='sell'))
+        AND DATE_FORMAT(d.create_time, 'Y%m%d') = DATE_FORMAT(now(), 'Y%m%d')
+        AND  NOT EXISTS (SELECT 1 from (
+            SELECT DISTINCT ph.customer_no FROM tbl_ph_buymatch_log ph WHERE ph.batch_no = DATE_FORMAT(now(), '%Y%m%d') and ph.type = 'common'
+            UNION
+            SELECT DISTINCT phf.customer_no FROM tbl_ph_match_fail_log phf WHERE DATE_FORMAT(phf.create_time, '%Y%m%d') = DATE_FORMAT(now(), '%Y%m%d')
+        )a where a.customer_no=d.buy_customer_no)
+        GROUP BY
+            d.product_trade_no,
+            d.buy_customer_no
+  </select>
+
+</mapper>

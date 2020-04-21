@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+    <!-- 日志目录路径变量 -->
+    <!--
+            <property name="LOG_DIR_PATH" value="/Users/dreyer/logs/hengjia-gateway"/>
+    -->
+    <property name="LOG_DIR_PATH" value="/logs/hengjia-scheduler"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] [%thread] [%class:%line] - %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- 按日期区分的滚动日志 -->
+    <appender name="ERROR-OUT"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR_PATH}/error.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] [%class:%line] - %m%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_DIR_PATH}/error-%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 按日期和大小区分的滚动日志 -->
+    <appender name="INFO-OUT"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR_PATH}/std-out.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] [%class:%line] - %m%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_DIR_PATH}/info-%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 按日期和大小区分的滚动日志 -->
+    <appender name="DEBUG-OUT"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR_PATH}/meesage.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] [%class:%line] - %m%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_DIR_PATH}/debug-%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="INFO-OUT"/>
+        <appender-ref ref="ERROR-OUT"/>
+    </root>
+</configuration>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.match.dao.BuymatchLogMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.match.model.BuymatchLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+    <result column="deal_no" jdbcType="VARCHAR" property="dealNo" />
+    <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+    <result column="product_trade_no" jdbcType="VARCHAR" property="productTradeNo" />
+    <result column="member_no" jdbcType="VARCHAR" property="memberNo" />
+    <result column="match_num" jdbcType="DECIMAL" property="matchNum" />
+    <result column="discount_price" jdbcType="DECIMAL" property="discountPrice" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>

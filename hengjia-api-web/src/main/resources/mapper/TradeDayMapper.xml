@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.trade.dao.TradeDayMapper">
+    <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.trade.model.TradeDay">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="trade_day" jdbcType="TIMESTAMP" property="tradeDay"/>
+        <result column="start_time" jdbcType="VARCHAR" property="startTime"/>
+        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
+        <result column="period" jdbcType="VARCHAR" property="period"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="flag" jdbcType="TINYINT" property="flag"/>
+    </resultMap>
+
+    <select id="selectTheFifthTradeDay" resultMap="BaseResultMap">
+    select * from (select trade_day from tbl_tra_trade_day where trade_day &gt; #{currentTradeDay} group by trade_day
+    order by trade_day asc limit 0, 5)t order by trade_day desc limit 0,1;
+  </select>
+    <select id="selectCurrentTradeDay" resultMap="BaseResultMap">
+    select trade_day from tbl_tra_trade_day where trade_day &lt;= #{currentDay} group by trade_day  order by trade_day desc limit 0,1
+  </select>
+
+    <select id="listTradeDay" parameterType="java.util.Map" resultType="java.util.Date">
+        select distinct t.trade_day from tbl_tra_trade_day t
+        where 1=1
+        <if test="isAdd == 1">
+            and t.trade_day > #{currentTradeDay}
+        </if>
+        <if test="isAdd == 0">
+            <![CDATA[and t.trade_day < #{currentTradeDay}]]>
+        </if>
+        order by t.trade_day
+        <if test="isAdd == 1">
+            asc
+        </if>
+        <if test="isAdd == 0">
+            desc
+        </if>
+        limit 0,#{limit}
+    </select>
+
+    <select id="selectDate" resultMap="BaseResultMap">
+        SELECT * FROM tbl_tra_trade_day t WHERE t.trade_day = DATE_FORMAT(#{time},'%Y-%m-%d') and t.flag = #{flag};
+    </select>
+    <select id="selectTradeDay" resultType="com.baibei.hengjia.api.modules.trade.model.TradeDay">
+        SELECT * FROM tbl_tra_trade_day where date_format(trade_day,'%Y-%m-%d %H:%i%s')=#{tradeDay} and period=#{period} and flag=1
+    </select>
+</mapper>

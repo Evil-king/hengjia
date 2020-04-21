@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.api.modules.settlement.dao.CleanProgressMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.api.modules.settlement.model.CleanProgress">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+    <result column="funcFlag" jdbcType="VARCHAR" property="funcflag" />
+    <result column="record_count" jdbcType="INTEGER" property="recordCount" />
+    <result column="result_flag" jdbcType="VARCHAR" property="resultFlag" />
+    <result column="reserve" jdbcType="VARCHAR" property="reserve" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>

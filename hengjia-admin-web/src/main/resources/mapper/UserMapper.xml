@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.admin.modules.admin.dao.UserMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.admin.modules.admin.model.User">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="avatar" jdbcType="VARCHAR" property="avatar" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="enabled" jdbcType="BIGINT" property="enabled" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="last_password_reset_time" jdbcType="TIMESTAMP" property="lastPasswordResetTime" />
+    <result column="dept_id" jdbcType="BIGINT" property="deptId" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="job_id" jdbcType="BIGINT" property="jobId" />
+  </resultMap>
+  <sql id="baseColumn">
+    id,avatar,create_time,email,enabled,password,username,last_password_reset_time,dept_id,phone,job_id
+  </sql>
+
+    <select id="findByUser" resultMap="BaseResultMap">
+       select
+       <include refid="baseColumn"/>
+       from
+        tbl_admin_user
+        <where>
+        <if test="deptId!=null and deptId!='' ">
+            and dept_id=#{deptId}
+        </if>
+        <if test="enabled!=null">
+            and enabled=#{enabled}
+        </if>
+        <if test="username!=null and username!='' ">
+            and username like concat('%',#{username},'%')
+        </if>
+        <if test="email!=null and email!=''">
+            and email like concat('%',#{email},'%')
+        </if>
+        </where>
+    </select>
+</mapper>

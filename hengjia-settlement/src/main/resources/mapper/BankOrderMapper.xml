@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baibei.hengjia.settlement.dao.BankOrderMapper">
+  <resultMap id="BaseResultMap" type="com.baibei.hengjia.settlement.model.BankOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+    <result column="serial_no" jdbcType="INTEGER" property="serialNo" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="deal_flag" jdbcType="VARCHAR" property="dealFlag" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="member_no" jdbcType="VARCHAR" property="memberNo" />
+    <result column="sub_account" jdbcType="VARCHAR" property="subAccount" />
+    <result column="sub_account_name" jdbcType="VARCHAR" property="subAccountName" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="pay_fee_account" jdbcType="VARCHAR" property="payFeeAccount" />
+    <result column="pay_sub_account_name" jdbcType="VARCHAR" property="paySubAccountName" />
+    <result column="pay_date" jdbcType="VARCHAR" property="payDate" />
+    <result column="pay_time" jdbcType="VARCHAR" property="payTime" />
+    <result column="bank_serial_no" jdbcType="VARCHAR" property="bankSerialNo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+</mapper>
